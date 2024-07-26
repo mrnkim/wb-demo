@@ -43,33 +43,29 @@ const SelectedImageDisplay = ({ imageBlobUrl, imageName, unselectImage }) => {
   const isPopperOpen = Boolean(anchorEl);
 
   const getCroppedImage = (image, crop) => {
-    console.log("🚀 > getCroppedImage > image, crop=", image, crop)
     return new Promise((resolve, reject) => {
+      if (!crop || !image) {
+        reject(new Error("Invalid crop or image"));
+        return;
+      }
+
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-      console.log("🚀 > returnnewPromise > ctx=", ctx)
       if (!ctx) {
         reject(new Error("Canvas context is not available"));
         return;
       }
+
       const scaleX = image.naturalWidth / image.width;
-      console.log("🚀 > returnnewPromise > scaleX=", scaleX)
       const scaleY = image.naturalHeight / image.height;
-      console.log("🚀 > returnnewPromise > scaleY=", scaleY)
       const pixelRatio = window.devicePixelRatio || 1;
-      console.log("🚀 > returnnewPromise > pixelRatio=", pixelRatio)
 
-      // Set canvas size
       canvas.width = crop.width * pixelRatio;
-      console.log("🚀 > returnnewPromise > canvas.width=", canvas.width)
       canvas.height = crop.height * pixelRatio;
-      console.log("🚀 > returnnewPromise > canvas.height=", canvas.height)
 
-      // Ensure that the canvas context scales properly
       ctx.scale(pixelRatio, pixelRatio);
       ctx.imageSmoothingQuality = "high";
 
-      // Draw the image on the canvas
       ctx.drawImage(
         image,
         crop.x * scaleX,
@@ -82,14 +78,13 @@ const SelectedImageDisplay = ({ imageBlobUrl, imageName, unselectImage }) => {
         crop.height
       );
 
-      // Convert the canvas content to a data URL
-      canvas.toDataURL("image/jpeg", (dataUrl) => {
-        if (dataUrl) {
-          resolve(dataUrl);
-        } else {
-          reject(new Error("Failed to convert canvas to data URL"));
-        }
-      });
+      // Convert the canvas to a data URL and resolve the promise
+      try {
+        const dataUrl = canvas.toDataURL("image/jpeg");
+        resolve(dataUrl);
+      } catch (error) {
+        reject(new Error("Failed to convert canvas to data URL"));
+      }
     });
   };
 
@@ -99,7 +94,10 @@ const SelectedImageDisplay = ({ imageBlobUrl, imageName, unselectImage }) => {
     if (completedCrop && imgRef.current) {
       try {
         console.log("Cropping image...");
-        const croppedImage = await getCroppedImage(imgRef.current, completedCrop);
+        const croppedImage = await getCroppedImage(
+          imgRef.current,
+          completedCrop
+        );
         setImageSrc(croppedImage);
         console.log("Cropped image:", croppedImage);
       } catch (error) {
