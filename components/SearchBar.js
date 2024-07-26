@@ -1,6 +1,18 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import SearchByImageButtonAndModal from "./SearchByImageButtonAndModal";
 
 const SearchBar = () => {
+  const [imageName, setImageName] = useState("");
+
+  const onImageSelected = (src) => {
+    if (typeof src === "string") {
+      setImageName(src); // Assuming `src` is a URL
+    } else if (src instanceof File) {
+      setImageName(src.name); // If `src` is a File object
+    }
+  };
+
   return (
     <div className="w-full max-w-4xl h-14 py-3 bg-white border-b-2 border-[#e5e6e4] flex justify-between items-center">
       <div className="flex items-center">
@@ -15,7 +27,8 @@ const SearchBar = () => {
       </div>
       <div className="flex items-center gap-2">
         <div className="w-px h-6 bg-[#d9d9d9]" />
-        <div className="px-3 py-2 rounded flex items-center">
+        <SearchByImageButtonAndModal onImageSelected={onImageSelected} />
+        {/* <div className="px-3 py-2 rounded flex items-center">
           <button className="flex items-center">
             <img
               className="w-5 h-5 mr-2"
@@ -26,7 +39,7 @@ const SearchBar = () => {
               Search by image
             </span>
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
