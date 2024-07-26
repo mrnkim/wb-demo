@@ -1,15 +1,27 @@
 "use client";
 import React, { useState } from "react";
 import SearchByImageButtonAndModal from "./SearchByImageButtonAndModal";
+import SelectedImageDisplay from "./SelectedImageDisplay";
 
 const SearchBar = () => {
   const [imageName, setImageName] = useState("");
+  const [imgSrc, setImageSrc] = useState("");
+
+  const clearImageQuery = async () => {
+    setImageName("");
+    setImageSrc("");
+  };
 
   const onImageSelected = (src) => {
     if (typeof src === "string") {
       setImageName(src); // Assuming `src` is a URL
+      setImageSrc(src);
     } else if (src instanceof File) {
       setImageName(src.name); // If `src` is a File object
+      const objectUrl = URL.createObjectURL(src);
+      setImageSrc(objectUrl);
+      // Clean up the object URL to avoid memory leaks
+      return () => URL.revokeObjectURL(objectUrl);
     }
   };
 
@@ -18,12 +30,17 @@ const SearchBar = () => {
       <div className="flex items-center">
         <div className="w-8 h-14 flex items-center gap-1 ml-4">
           <div className="w-6 h-6">
-            <img src="/SearchVideoLeft.svg" alt="Search Icon" />
+            {!imgSrc && <img src="/SearchVideoLeft.svg" alt="Search Icon" />}
           </div>
+            {imgSrc && <SelectedImageDisplay
+              imageBlobUrl={imgSrc}
+              imageName={imageName}
+              unselectImage={clearImageQuery}
+            />}
         </div>
-        <div className="text-[#c5c7c3] text-xl leading-loose ml-2">
+        {!imgSrc && <div className="text-[#c5c7c3] text-xl leading-loose ml-2">
           What are you looking for?
-        </div>
+        </div>}
       </div>
       <div className="flex items-center gap-2">
         <div className="w-px h-6 bg-[#d9d9d9]" />

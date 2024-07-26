@@ -31,10 +31,7 @@ const getErrorMessage = (code) => {
 
 const SearchByImageButtonAndModal = ({ onImageSelected }) => {
   const [imageUrlFromInput, setImageUrlFromInput] = useState("");
-  console.log(
-    "🚀 > SearchByImageButtonAndModal > imageUrlFromInput=",
-    imageUrlFromInput
-  );
+
   const [errorCode, setErrorCode] = useState();
   const [isHovering, setIsHovering] = useState(false);
 
@@ -76,7 +73,7 @@ const SearchByImageButtonAndModal = ({ onImageSelected }) => {
       console.error("Invalid URL");
     }
   };
- 
+
   return (
     <>
       <div className={clsx("h-6 w-[1px]", "bg-grey-200", "ml-auto mr-1")} />
