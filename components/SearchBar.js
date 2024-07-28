@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import SearchByImageButtonAndModal from "./SearchByImageButtonAndModal";
 import SelectedImageDisplay from "./SelectedImageDisplay";
 
-const SearchBar = ({ imgQuerySrc, setImgQuerySrc }) => {
+const SearchBar = ({ imgQuerySrc, setImgQuerySrc, setUploadedImg }) => {
   const [imgName, setImgName] = useState("");
 
   const clearImageQuery = async () => {
@@ -11,20 +11,27 @@ const SearchBar = ({ imgQuerySrc, setImgQuerySrc }) => {
     setImgQuerySrc("");
   };
 
-  const onImageSelected = (src) => {
-    if (typeof src === "string") {
-      setImgName(src); // Assuming `src` is a URL
+  const onImageSelected = async (src) => {
+    if (src instanceof File) {
+      const formData = new FormData();
+      formData.append("file", src);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        console.error("Failed to upload image");
+        return;
+      }
+
+      const { url } = await response.json();
       setImgQuerySrc(src);
-      console.log("🚀 > SearchBar > imgQuerySrc=", imgQuerySrc);
-    } else if (src instanceof File) {
-      setImgName(src.name); // If `src` is a File object
-      const objectUrl = URL.createObjectURL(src);
-      setImgQuerySrc(objectUrl);
-      // Clean up the object URL to avoid memory leaks
-      return () => URL.revokeObjectURL(objectUrl);
+      setUploadedImg(url);
+      setImgName(src.name);
     }
   };
-
   return (
     <div className="w-full max-w-4xl h-14 py-3 bg-white border-b-2 border-[#e5e6e4] flex justify-between items-center">
       <div className="flex items-center">
