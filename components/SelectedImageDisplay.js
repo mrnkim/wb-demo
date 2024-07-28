@@ -14,10 +14,10 @@ import styles from "./styles.module.css";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
-const SelectedImageDisplay = ({ imageBlobUrl, imageName, unselectImage }) => {
+const SelectedImageDisplay = ({ imgQuerySrc, imgName, unselectImage }) => {
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
-  const [imageSrc, setImageSrc] = useState(imageBlobUrl);
+  const [imageSrc, setImageSrc] = useState(imgQuerySrc);
   const imgRef = useRef(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -138,7 +138,7 @@ const SelectedImageDisplay = ({ imageBlobUrl, imageName, unselectImage }) => {
             "whitespace-nowrap"
           )}
         >
-          {imageName}
+          {imgName}
         </span>
         <IconButton size="small" onClick={onCloseIconClick}>
           <CloseIcon className="text-grey-500" fontSize="small" />
@@ -188,7 +188,7 @@ const SelectedImageDisplay = ({ imageBlobUrl, imageName, unselectImage }) => {
         onClose={closeDisplayModal}
       >
         <DialogTitle className="w-[calc(100%-30px)] truncate tablet:pb-3">
-          {imageName}
+          {imgName}
           <IconButton
             className="absolute right-3 top-3"
             onClick={closeDisplayModal}
