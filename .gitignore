@@ -34,3 +34,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Ignore everything in the tmp folder
+/tmp/*
+
+# But keep the tmp folder itself
+!.gitignore
+!/tmp/.gitkeep

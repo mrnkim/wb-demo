@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from "react";
 
 const SearchResults = ({ imgQuerySrc, uploadedImg }) => {
-  console.log("🚀 > SearchResults > imgQuerySrc=", imgQuerySrc);
-  console.log("🚀 > SearchResults > uploadedImg=", uploadedImg);
   const [data, setData] = useState(null);
+  console.log("🚀 > SearchResults > data=", data);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +18,6 @@ const SearchResults = ({ imgQuerySrc, uploadedImg }) => {
         const response = await fetch(
           `/api/search?query=${encodeURIComponent(uploadedImg)}`
         );
-        console.log("🚀 > fetchData > response=", response);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -42,8 +40,8 @@ const SearchResults = ({ imgQuerySrc, uploadedImg }) => {
     <div>
       <p>Showing results for: {uploadedImg}</p>
       <ul>
-        {data?.results?.map((result, index) => (
-          <li key={index}>{result.title}</li>
+        {data?.searchData?.map((clip, index) => (
+          <li key={index}>{clip.score}</li>
         ))}
       </ul>
     </div>

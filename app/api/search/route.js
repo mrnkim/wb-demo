@@ -1,17 +1,28 @@
 import { NextResponse } from "next/server";
 import { TwelveLabs, SearchData } from "twelvelabs-js";
-import fs from "fs/promises";
+import * as fs from "fs";
 import path from "path";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const imgQuerySrc = searchParams.get("query");
-  console.log("🚀 > GET > imgQuerySrc=", imgQuerySrc);
+  const searchData = [];
 
   if (!imgQuerySrc) {
     return NextResponse.json(
       { error: "Query parameter is required" },
       { status: 400 }
+    );
+  }
+
+  // Ensure environment variables are set
+  const apiKey = process.env.TWELVELABS_API_KEY;
+  const indexId = process.env.TWELVELABS_INDEX_ID;
+
+  if (!apiKey || !indexId) {
+    return NextResponse.json(
+      { error: "API key or Index ID is not set" },
+      { status: 500 }
     );
   }
 
@@ -23,56 +34,38 @@ export async function GET(req) {
       ? imgQuerySrc
       : path.join(process.cwd(), imgQuerySrc);
 
-    console.log("🚀 > GET > imagePath=", imagePath);
-
-    // const imageBuffer = await fs.readFile(imagePath);
-    // console.log("🚀 > GET > imageBuffer=", imageBuffer);
-
-    // Ensure the image file exists
-    const fileExists = await fs
-      .access(imagePath)
-      .then(() => true)
-      .catch(() => false);
-    if (!fileExists) {
-      throw new Error(`File does not exist at path: ${imagePath}`);
-    }
-
-    // Read the image file as a stream
-    const imageStream = fs.createReadStream(imagePath);
-
     const options = {
       indexId: process.env.TWELVELABS_INDEX_ID,
-      queryMediaFile: imageStream,
+      queryMediaFile: fs.createReadStream(imagePath),
       queryMediaType: "image",
-      options: ["visual", "conversation"], // Add the required options
+      options: ["visual", "conversation"],
+      threshold: "high",
+      // adjustConfidenceLevel: "0.55",
     };
-    console.log("🚀 > GET > options=", options);
+
     // Perform the search query using the image buffer
     const imageResult = await client.search.query(options);
     console.log("🚀 > GET > imageResult=", imageResult);
-
-    // Log the results
-    imageResult.data.forEach((clip) => {
-      console.log(
-        `  score=${clip.score} start=${clip.start} end=${clip.end} confidence=${clip.confidence}`
-      );
-    });
+    searchData.push(...imageResult.data);
+    console.log("🚀 > GET > searchData=", searchData);
 
     let nextPageDataByImage = await imageResult.next();
     while (nextPageDataByImage !== null) {
       nextPageDataByImage.forEach((clip) => {
-        console.log(
-          `  score=${clip.score} start=${clip.start} end=${clip.end} confidence=${clip.confidence}`
-        );
+        searchData.push(clip);
       });
       nextPageDataByImage = await imageResult.next();
     }
+    console.log("🚀 > GET > searchData=", searchData);
 
     return NextResponse.json({
-      message: "Index retrieved, check console",
-      index: imageResult.index,
+      pageInfo: imageResult.pageInfo,
+      searchData,
     });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || error },
+      { status: 500 }
+    );
   }
 }
