@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import Video from "./Video";
+import videojs from "video.js";
+import Player from "./Player"; // Correctly import the Player component
 
 const SearchResultList = ({
   searchResultData,
@@ -10,23 +11,25 @@ const SearchResultList = ({
 
   useEffect(() => {
     const fetchVideoDetails = async () => {
-      try {
-        const updatedData = await Promise.all(
-          searchResultData?.searchData?.map(async (clip) => {
-            const response = await fetch(
-              `/api/getVideo?videoId=${clip.videoId}`
-            );
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            const videoDetail = await response.json();
-            return { ...clip, videoDetail: videoDetail };
-          })
-        );
+      if (searchResultData) {
+        try {
+          const updatedData = await Promise.all(
+            searchResultData?.searchData?.map(async (clip) => {
+              const response = await fetch(
+                `/api/getVideo?videoId=${clip.videoId}`
+              );
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              const videoDetail = await response.json();
+              return { ...clip, videoDetail: videoDetail };
+            })
+          );
 
-        setUpdatedSearchData(updatedData);
-      } catch (error) {
-        console.error("Failed to fetch video details:", error);
+          setUpdatedSearchData(updatedData);
+        } catch (error) {
+          console.error("Failed to fetch video details:", error);
+        }
       }
     };
 
@@ -38,12 +41,6 @@ const SearchResultList = ({
     controls: true,
     responsive: true,
     fluid: true,
-    sources: [
-      {
-        src: "/path/to/video.mp4",
-        type: "application/x-mpegURL",
-      },
-    ],
   };
 
   const handlePlayerReady = (player) => {
@@ -59,19 +56,18 @@ const SearchResultList = ({
           <li key={index}>
             {clip.score}
             {clip.videoDetail?.hls?.videoUrl && (
-              <Video
-                options={{
-                  ...videoJsOptions,
-                  sources: [
-                    {
-                      src: clip.videoDetail.hls.videoUrl,
-                      type: "application/x-mpegURL",
-                    },
-                  ],
+              <Player
+                sources={[
+                  {
+                    src: clip.videoDetail.hls.videoUrl,
+                    type: "application/x-mpegURL",
+                  },
+                ]}
+                offset={{
+                  start: clip.start,
+                  end: clip.end,
                 }}
                 onReady={handlePlayerReady}
-                start={clip.videoDetail.start}
-                end={clip.videoDetail.end}
               />
             )}
           </li>
