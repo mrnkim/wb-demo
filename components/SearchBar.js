@@ -3,7 +3,12 @@ import React, { useState } from "react";
 import SearchByImageButtonAndModal from "./SearchByImageButtonAndModal";
 import SelectedImageDisplay from "./SelectedImageDisplay";
 
-const SearchBar = ({ imgQuerySrc, setImgQuerySrc, setUploadedImg }) => {
+const SearchBar = ({
+  imgQuerySrc,
+  setImgQuerySrc,
+  setUploadedImg,
+  uploadedImg,
+}) => {
   const [imgName, setImgName] = useState("");
 
   const clearImageQuery = async () => {
@@ -46,6 +51,7 @@ const SearchBar = ({ imgQuerySrc, setImgQuerySrc, setUploadedImg }) => {
               imgQuerySrc={imgQuerySrc}
               imgName={imgName}
               unselectImage={clearImageQuery}
+              uploadedImg={uploadedImg}
             />
           )}
         </div>

@@ -9,7 +9,7 @@ import {
   dialogClasses,
 } from "@mui/material";
 import clsx from "clsx";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./styles.module.css";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -17,7 +17,11 @@ import "react-image-crop/dist/ReactCrop.css";
 const SelectedImageDisplay = ({ imgQuerySrc, imgName, unselectImage }) => {
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
-  const [imageSrc, setImageSrc] = useState(imgQuerySrc);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [error, setError] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const imgRef = useRef(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,6 +34,19 @@ const SelectedImageDisplay = ({ imgQuerySrc, imgName, unselectImage }) => {
     setAnchorEl(event.currentTarget);
   };
   const closePopover = () => setAnchorEl(null);
+
+  useEffect(() => {
+    if (imgQuerySrc instanceof File) {
+      const objectUrl = URL.createObjectURL(imgQuerySrc);
+      setImageSrc(objectUrl);
+
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    } else {
+      setImageSrc(imgQuerySrc);
+    }
+  }, [imgQuerySrc]);
 
   if (!imageSrc) {
     return <Skeleton variant="text" width={240} height={36} />;
@@ -100,6 +117,7 @@ const SelectedImageDisplay = ({ imgQuerySrc, imgName, unselectImage }) => {
         );
         setImageSrc(croppedImage);
         console.log("Cropped image:", croppedImage);
+        // searchImage(imageSrc);
       } catch (error) {
         console.error("Error cropping image:", error);
       }
@@ -107,6 +125,28 @@ const SelectedImageDisplay = ({ imgQuerySrc, imgName, unselectImage }) => {
       console.warn("No completed crop or imgRef.current is null");
     }
   };
+
+  const searchImage = async (imageSrc) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `/api/search?query=${encodeURIComponent(imageSrc)}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const result = await response.json();
+      setSearchResultData(result);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>

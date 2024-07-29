@@ -14,6 +14,7 @@ export default function Home() {
         imgQuerySrc={imgQuerySrc}
         setImgQuerySrc={setImgQuerySrc}
         setUploadedImg={setUploadedImg}
+        uploadedImg={uploadedImg}
       />
       <Videos />
       {imgQuerySrc && (
