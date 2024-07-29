@@ -45,9 +45,7 @@ export async function GET(req) {
 
     // Perform the search query using the image buffer
     const imageResult = await client.search.query(options);
-    console.log("🚀 > GET > imageResult=", imageResult);
     searchData.push(...imageResult.data);
-    console.log("🚀 > GET > searchData=", searchData);
 
     let nextPageDataByImage = await imageResult.next();
     while (nextPageDataByImage !== null) {
@@ -56,7 +54,6 @@ export async function GET(req) {
       });
       nextPageDataByImage = await imageResult.next();
     }
-    console.log("🚀 > GET > searchData=", searchData);
 
     return NextResponse.json({
       pageInfo: imageResult.pageInfo,

@@ -1,9 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import SearchResultList from "./SearchResultList";
 
 const SearchResults = ({ imgQuerySrc, uploadedImg }) => {
-  const [data, setData] = useState(null);
-  console.log("🚀 > SearchResults > data=", data);
+  const [searchResultData, setSearchResultData] = useState(null);
+  const [updatedSearchData, setUpdatedSearchData] = useState([]);
+  console.log("🚀 > SearchResults > updatedSearchData=", updatedSearchData);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -22,7 +24,7 @@ const SearchResults = ({ imgQuerySrc, uploadedImg }) => {
           throw new Error("Network response was not ok");
         }
         const result = await response.json();
-        setData(result);
+        setSearchResultData(result);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -39,11 +41,11 @@ const SearchResults = ({ imgQuerySrc, uploadedImg }) => {
   return (
     <div>
       <p>Showing results for: {uploadedImg}</p>
-      <ul>
-        {data?.searchData?.map((clip, index) => (
-          <li key={index}>{clip.score}</li>
-        ))}
-      </ul>
+      <SearchResultList
+        searchResultData={searchResultData}
+        updatedSearchData={updatedSearchData}
+        setUpdatedSearchData={setUpdatedSearchData}
+      />
     </div>
   );
 };
