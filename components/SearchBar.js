@@ -7,15 +7,23 @@ const SearchBar = ({
   imgQuerySrc,
   setImgQuerySrc,
   setUploadedImg,
-  uploadedImg,
+  searchResultData,
+  setSearchResultData,
+  updatedSearchData,
+  setUpdatedSearchData,
+  searchImage,
+  imgName,
+  setImgName,
+  clearImageQuery
 }) => {
-  const [imgName, setImgName] = useState("");
+  // const [imgName, setImgName] = useState("");
 
-  const clearImageQuery = async () => {
-    setImgName("");
-    setImgQuerySrc("");
-  };
+  // const clearImageQuery = async () => {
+  //   setImgName("");
+  //   setImgQuerySrc("");
+  // };
 
+  //TODO: Merge with uploadImage in SelectedImageDisplay.js
   const onImageSelected = async (src) => {
     if (src instanceof File) {
       const formData = new FormData();
@@ -49,9 +57,16 @@ const SearchBar = ({
           {imgQuerySrc && (
             <SelectedImageDisplay
               imgQuerySrc={imgQuerySrc}
+              setImgQuerySrc={setImgQuerySrc}
               imgName={imgName}
+              setImgName={setImgName}
               unselectImage={clearImageQuery}
-              uploadedImg={uploadedImg}
+              setUploadedImg={setUploadedImg}
+              searchResultData={searchResultData}
+              setSearchResultData={setSearchResultData}
+              updatedSearchData={updatedSearchData}
+              setUpdatedSearchData={setUpdatedSearchData}
+              searchImage={searchImage}
             />
           )}
         </div>

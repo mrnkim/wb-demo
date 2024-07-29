@@ -40,7 +40,7 @@ export async function GET(req) {
       queryMediaType: "image",
       options: ["visual", "conversation"],
       threshold: "high",
-      // adjustConfidenceLevel: "0.55",
+      adjustConfidenceLevel: "0.6",
     };
 
     // Perform the search query using the image buffer

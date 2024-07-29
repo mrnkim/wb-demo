@@ -14,13 +14,24 @@ import styles from "./styles.module.css";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
-const SelectedImageDisplay = ({ imgQuerySrc, imgName, unselectImage }) => {
+const SelectedImageDisplay = ({
+  imgQuerySrc,
+  setImgQuerySrc,
+  imgName,
+  setImgName,
+  unselectImage,
+  setUploadedImg,
+  searchResultData,
+  setSearchResultData,
+  updatedSearchData,
+  setUpdatedSearchData,
+  searchImage,
+}) => {
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
-  const [error, setError] = useState(null);
-
-  const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const imgRef = useRef(null);
 
@@ -95,7 +106,6 @@ const SelectedImageDisplay = ({ imgQuerySrc, imgName, unselectImage }) => {
         crop.height
       );
 
-      // Convert the canvas to a data URL and resolve the promise
       try {
         const dataUrl = canvas.toDataURL("image/jpeg");
         resolve(dataUrl);
@@ -105,48 +115,64 @@ const SelectedImageDisplay = ({ imgQuerySrc, imgName, unselectImage }) => {
     });
   };
 
-  const onCropSearchClick = async () => {
-    console.log("Search button clicked");
+  const dataURLToBlob = (dataURL) => {
+    const [header, base64Data] = dataURL.split(",");
+    const mimeString = header.split(":")[1].split(";")[0];
+    const binaryString = window.atob(base64Data);
+    const arrayBuffer = new ArrayBuffer(binaryString.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
 
+    for (let i = 0; i < binaryString.length; i++) {
+      uint8Array[i] = binaryString.charCodeAt(i);
+    }
+
+    return new Blob([uint8Array], { type: mimeString });
+  };
+
+  const uploadImage = async (src) => {
+    const blob = dataURLToBlob(src);
+    const formData = new FormData();
+    formData.append("file", blob, `${imgName}_cropped`);
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to upload image");
+    }
+
+    const { url } = await response.json();
+    const urlParts = url.split('/');
+    const filename = urlParts[urlParts.length - 1]
+
+
+    setImgQuerySrc(src);
+    setUploadedImg(url);
+    setImgName(filename);
+  };
+
+  const onCropSearchClick = async () => {
     if (completedCrop && imgRef.current) {
       try {
-        console.log("Cropping image...");
         const croppedImage = await getCroppedImage(
           imgRef.current,
           completedCrop
         );
-        setImageSrc(croppedImage);
-        console.log("Cropped image:", croppedImage);
-        // searchImage(imageSrc);
+        const uploadResponse = await uploadImage(croppedImage);
+        await searchImage(uploadResponse);
+        closeDisplayModal();
       } catch (error) {
-        console.error("Error cropping image:", error);
+        console.error("Error processing image:", error);
       }
     } else {
       console.warn("No completed crop or imgRef.current is null");
     }
   };
 
-  const searchImage = async (imageSrc) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `/api/search?query=${encodeURIComponent(imageSrc)}`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const result = await response.json();
-      setSearchResultData(result);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  // if (isLoading) return <div>Loading...</div>;
+  // if (error) return <div>Error: {error}</div>;
 
   return (
     <>

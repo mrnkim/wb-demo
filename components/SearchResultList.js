@@ -50,11 +50,13 @@ const SearchResultList = ({
   };
 
   return (
-    <div>
-      <ul>
-        {updatedSearchData?.map((clip, index) => (
-          <li key={index}>
-            {clip.score}
+    <div className="flex flex-wrap -mx-2">
+      {updatedSearchData?.map((clip, index) => (
+        <div key={index} className="w-full md:w-1/3 px-2 mb-4">
+          <div className="bg-gray-100 p-2 rounded shadow">
+            <div className="text-center mb-2">
+              <span className="text-gray-700">{clip.score}</span>
+            </div>
             {clip.videoDetail?.hls?.videoUrl && (
               <Player
                 sources={[
@@ -70,9 +72,9 @@ const SearchResultList = ({
                 onReady={handlePlayerReady}
               />
             )}
-          </li>
-        ))}
-      </ul>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
