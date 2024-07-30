@@ -3,10 +3,16 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "videojs-offset"; // Import the videojs-offset plugin
 
-export const Video = (props) => {
+export const Video = () => {
   const videoRef = useRef(null);
   const playerRef = useRef(null);
-  const { options, onReady } = props;
+
+  options = {
+    autoplay: false,
+    controls: true,
+    responsive: true,
+    fluid: true,
+  };
 
   useEffect(() => {
     if (!playerRef.current) {

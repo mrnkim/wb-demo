@@ -10,6 +10,7 @@ export default function Home() {
   const [searchResultData, setSearchResultData] = useState(null);
   console.log("🚀 > Home > searchResultData=", searchResultData);
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
+  console.log("🚀 > Home > updatedSearchData=", updatedSearchData)
   const [imgName, setImgName] = useState("");
 
   const clearImageQuery = async () => {

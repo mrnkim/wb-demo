@@ -39,7 +39,7 @@ export async function GET(req) {
       queryMediaFile: fs.createReadStream(imagePath),
       queryMediaType: "image",
       options: ["visual", "conversation"],
-      threshold: "high",
+      threshold: "medium",
       adjustConfidenceLevel: "0.6",
     };
 

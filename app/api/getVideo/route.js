@@ -23,7 +23,7 @@ export async function GET(req) {
 
     return NextResponse.json({
       hls: video.hls,
-      metadata: video.metadaata,
+      metadata: video.metadata,
       source: video.source,
     });
   } catch (error) {
