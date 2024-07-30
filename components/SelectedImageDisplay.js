@@ -88,11 +88,17 @@ const SelectedImageDisplay = ({
       const scaleY = image.naturalHeight / image.height;
       const pixelRatio = window.devicePixelRatio || 1;
 
-      canvas.width = crop.width * pixelRatio;
-      canvas.height = crop.height * pixelRatio;
+      const cropWidth = Math.max(crop.width, 378);
+      const cropHeight = Math.max(crop.height, 378);
+
+      canvas.width = cropWidth * pixelRatio;
+      canvas.height = cropHeight * pixelRatio;
 
       ctx.scale(pixelRatio, pixelRatio);
       ctx.imageSmoothingQuality = "high";
+
+      const offsetX = (cropWidth - crop.width) / 2;
+      const offsetY = (cropHeight - crop.height) / 2;
 
       ctx.drawImage(
         image,
@@ -100,8 +106,8 @@ const SelectedImageDisplay = ({
         crop.y * scaleY,
         crop.width * scaleX,
         crop.height * scaleY,
-        0,
-        0,
+        offsetX,
+        offsetY,
         crop.width,
         crop.height
       );
@@ -144,9 +150,8 @@ const SelectedImageDisplay = ({
     }
 
     const { url } = await response.json();
-    const urlParts = url.split('/');
-    const filename = urlParts[urlParts.length - 1]
-
+    const urlParts = url.split("/");
+    const filename = urlParts[urlParts.length - 1];
 
     setImgQuerySrc(src);
     setUploadedImg(url);
