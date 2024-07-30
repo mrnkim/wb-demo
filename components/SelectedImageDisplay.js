@@ -35,7 +35,7 @@ const SelectedImageDisplay = ({
 
   const imgRef = useRef(null);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const [isModalOpen, setIsModalOpen] = useState(false);
   const openDisplayModal = () => setIsModalOpen(true);
   const closeDisplayModal = () => setIsModalOpen(false);
 
