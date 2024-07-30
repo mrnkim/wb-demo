@@ -26,7 +26,7 @@ export async function GET(req) {
     );
   }
 
-  const client = new TwelveLabs({ apiKey: process.env.TWELVELABS_API_KEY });
+  const client = new TwelveLabs({ apiKey });
 
   try {
     // Determine the correct image path
@@ -35,7 +35,7 @@ export async function GET(req) {
       : path.join(process.cwd(), imgQuerySrc);
 
     const options = {
-      indexId: process.env.TWELVELABS_INDEX_ID,
+      indexId,
       queryMediaFile: fs.createReadStream(imagePath),
       queryMediaType: "image",
       options: ["visual", "conversation"],
@@ -45,23 +45,39 @@ export async function GET(req) {
 
     // Perform the search query using the image buffer
     const imageResult = await client.search.query(options);
-    searchData.push(...imageResult.data);
 
-    let nextPageDataByImage = await imageResult.next();
-    while (nextPageDataByImage !== null) {
-      nextPageDataByImage.forEach((clip) => {
-        searchData.push(clip);
-      });
-      nextPageDataByImage = await imageResult.next();
+    // Log the entire imageResult for debugging
+    console.log("imageResult:", imageResult);
+
+    // Check if imageResult and imageResult.data are defined
+    if (!imageResult || !imageResult.data) {
+      return NextResponse.json(
+        { error: "Unexpected response structure from search query" },
+        { status: 500 }
+      );
     }
 
+    searchData.push(...imageResult.data);
+
+    // Ensure next() method and pageInfo are available
+    while (imageResult.next) {
+      const nextPageDataByImage = await imageResult.next();
+      if (nextPageDataByImage) {
+        searchData.push(...nextPageDataByImage);
+      } else {
+        break;
+      }
+    }
+
+    // Ensure pageInfo is available
+    const pageInfo = imageResult.pageInfo || {};
     return NextResponse.json({
-      pageInfo: imageResult.pageInfo,
+      pageInfo,
       searchData,
     });
   } catch (error) {
     return NextResponse.json(
-      { error: error.message || error },
+      { error: error.message || error.toString() },
       { status: 500 }
     );
   }
