@@ -17,27 +17,6 @@ export default function Home() {
     setImgQuerySrc("");
   };
 
-  const searchImage = async (imagePath) => {
-    // setIsLoading(true);
-    // setError(null);
-    try {
-      const response = await fetch(
-        `/api/search?query=${encodeURIComponent(imagePath)}`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const result = await response.json();
-      setSearchResultData(result);
-    } catch (error) {
-      console.error(error);
-      // setError(error.message);
-    }
-    // finally {
-    //   setIsLoading(false);
-    // }
-  };
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <SearchBar
@@ -48,14 +27,13 @@ export default function Home() {
         setSearchResultData={setSearchResultData}
         updatedSearchData={updatedSearchData}
         setUpdatedSearchData={setUpdatedSearchData}
-        searchImage={searchImage}
         imgName={imgName}
         setImgName={setImgName}
         clearImageQuery={clearImageQuery}
         uploadedImg={uploadedImg}
       />
       {!uploadedImg && <Videos />}
-      {uploadedImg && (
+      {uploadedImg && searchResultData && (
         <SearchResults
           imgQuerySrc={imgQuerySrc}
           uploadedImg={uploadedImg}
@@ -63,7 +41,6 @@ export default function Home() {
           setSearchResultData={setSearchResultData}
           updatedSearchData={updatedSearchData}
           setUpdatedSearchData={setUpdatedSearchData}
-          searchImage={searchImage}
           imgName={imgName}
         />
       )}

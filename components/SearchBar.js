@@ -11,7 +11,6 @@ const SearchBar = ({
   setSearchResultData,
   updatedSearchData,
   setUpdatedSearchData,
-  searchImage,
   imgName,
   setImgName,
   clearImageQuery,
@@ -45,6 +44,27 @@ const SearchBar = ({
       setUploadedImg(url);
       setImgName(src.name);
     }
+  };
+
+  const searchImage = async (imagePath) => {
+    // setIsLoading(true);
+    // setError(null);
+    try {
+      const response = await fetch(
+        `/api/search?query=${encodeURIComponent(imagePath)}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const result = await response.json();
+      setSearchResultData(result);
+    } catch (error) {
+      console.error(error);
+      // setError(error.message);
+    }
+    // finally {
+    //   setIsLoading(false);
+    // }
   };
 
   useEffect(() => {
