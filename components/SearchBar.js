@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import SearchByImageButtonAndModal from "./SearchByImageButtonAndModal";
 import SelectedImageDisplay from "./SelectedImageDisplay";
 
@@ -14,7 +14,8 @@ const SearchBar = ({
   searchImage,
   imgName,
   setImgName,
-  clearImageQuery
+  clearImageQuery,
+  uploadedImg,
 }) => {
   // const [imgName, setImgName] = useState("");
 
@@ -45,6 +46,12 @@ const SearchBar = ({
       setImgName(src.name);
     }
   };
+
+  useEffect(() => {
+    if (!uploadedImg) return;
+    searchImage(uploadedImg);
+  }, [uploadedImg]);
+
   return (
     <div className="w-full max-w-4xl h-14 py-3 bg-white border-b-2 border-[#e5e6e4] flex justify-between items-center">
       <div className="flex items-center">

@@ -8,7 +8,7 @@ export default function Home() {
   const [imgQuerySrc, setImgQuerySrc] = useState("");
   const [uploadedImg, setUploadedImg] = useState("");
   const [searchResultData, setSearchResultData] = useState(null);
-  console.log("🚀 > Home > searchResultData=", searchResultData)
+  console.log("🚀 > Home > searchResultData=", searchResultData);
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
   const [imgName, setImgName] = useState("");
 
@@ -52,6 +52,7 @@ export default function Home() {
         imgName={imgName}
         setImgName={setImgName}
         clearImageQuery={clearImageQuery}
+        uploadedImg={uploadedImg}
       />
       {!uploadedImg && <Videos />}
       {uploadedImg && (

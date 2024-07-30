@@ -6,10 +6,6 @@ const SearchResults = ({ imgQuerySrc, uploadedImg, searchResultData, setSearchRe
   // const [error, setError] = useState(null);
   // const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (!uploadedImg) return;
-   searchImage(uploadedImg);
-  }, [imgQuerySrc]);
 
   // if (isLoading) return <div>Loading...</div>;
   // if (error) return <div>Error: {error}</div>;
