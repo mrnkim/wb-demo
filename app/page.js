@@ -14,8 +14,11 @@ export default function Home() {
   const [imgName, setImgName] = useState("");
 
   const clearImageQuery = async () => {
-    setImgName("");
     setImgQuerySrc("");
+    setUploadedImg("");
+    setSearchResultData("");
+    setUpdatedSearchData("");
+    setImgName("");
   };
 
   return (
