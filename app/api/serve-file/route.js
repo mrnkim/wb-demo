@@ -5,7 +5,6 @@ import fs from "fs";
 
 export async function GET(req) {
   const filePath = req.nextUrl.searchParams.get("file");
-  console.log("🚀 > GET > filePath=", filePath);
 
   if (!filePath) {
     return NextResponse.json(
@@ -17,7 +16,6 @@ export async function GET(req) {
   // Extract the filename from the full file path
   const fileName = path.basename(filePath);
   const resolvedFilePath = path.join(process.cwd(), "tmp", fileName);
-  console.log("🚀 > GET > resolvedFilePath=", resolvedFilePath);
 
   if (!fs.existsSync(resolvedFilePath)) {
     return NextResponse.json({ error: "File not found" }, { status: 404 });

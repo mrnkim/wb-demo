@@ -18,7 +18,6 @@ const SearchResultList = ({
           const videoIds = new Set(
             searchResultData.searchData.map((clip) => clip.videoId)
           );
-          console.log("🚀 > fetchVideoDetails > videoIds=", videoIds)
 
           const updatedData = await Promise.all(
             searchResultData?.searchData?.map(async (clip) => {

@@ -16,7 +16,6 @@ const SearchBar = ({
   clearImageQuery,
   uploadedImg,
 }) => {
-  console.log("🚀 > imgQuerySrc=", imgQuerySrc);
   // const [imgName, setImgName] = useState("");
 
   // const clearImageQuery = async () => {
@@ -45,29 +44,6 @@ const SearchBar = ({
         const { downloadUrl } = await response.json(); // Get fileName from response
         const fileName = downloadUrl.split("/").pop(); // Simple method to get file name
 
-        // const imageUrl = `/api/serve-file?file=${encodeURIComponent(
-        //   downloadUrl
-        // )}`;
-        // console.log("🚀 > onImageSelected > imageUrl=", imageUrl)
-        // const blob = await fetch(imageUrl).then((res) => res.blob());
-        // const fileName = imageUrl.split("/").pop(); // Simple method to get file name
-
-        // const file = new File([blob], fileName, { type: blob.type });
-
-        // const formData = new FormData();
-        // formData.append("file", file);
-
-        // const uploadResponse = await fetch("/api/upload", {
-        //   method: "POST",
-        //   body: formData,
-        // });
-
-        // if (!uploadResponse.ok) {
-        //   console.error("Failed to upload image");
-        //   return;
-        // }
-
-        // const { url } = await uploadResponse.json();
         setImgQuerySrc(downloadUrl);
         setUploadedImg(downloadUrl);
         setImgName(fileName);

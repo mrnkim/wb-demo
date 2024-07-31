@@ -49,7 +49,6 @@ const SelectedImageDisplay = ({
   setUpdatedSearchData,
   searchImage,
 }) => {
-  console.log("🚀 > imgQuerySrc=", imgQuerySrc);
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
@@ -159,7 +158,6 @@ const SelectedImageDisplay = ({
         crop.height
       );
 
-      console.log("🚀 > returnnewPromise > canvas=", canvas);
       try {
         const dataUrl = canvas.toDataURL("image/jpeg");
         resolve(dataUrl);
@@ -183,40 +181,70 @@ const SelectedImageDisplay = ({
     return new Blob([uint8Array], { type: mimeString });
   };
 
-  const uploadImage = async (src) => {
-    const blob = dataURLToBlob(src);
-    const formData = new FormData();
-    formData.append("file", blob, `${imgName}_cropped`);
+  const uploadImage = async (src, isUrl = false) => {
+    if (isUrl) {
+      const urlParts = imgQuerySrc.split("/");
+      const originalFilename =
+        imgQuerySrc.split("/")[imgQuerySrc.split("/") - 1];
+      const croppedFilename = `${originalFilename}-cropped`;
 
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
+      const response = await fetch("/api/uploadByUrl", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: src }),
+      });
 
-    if (!response.ok) {
-      throw new Error("Failed to upload image");
+      if (!response.ok) {
+        throw new Error("Failed to upload image by URL");
+      }
+
+      const { downloadUrl } = await response.json();
+      const newUrlParts = downloadUrl.split("/");
+      const filename = newUrlParts[newUrlParts.length - 1];
+
+      setImgQuerySrc(downloadUrl);
+      setUploadedImg(downloadUrl);
+      setImgName(filename);
+
+      return filename;
+    } else {
+      // If the image source is a Data URL, upload via the upload route
+      const blob = dataURLToBlob(src);
+      const formData = new FormData();
+      formData.append("file", blob, `${imgName}_cropped`);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { url } = await response.json();
+      const urlParts = url.split("/");
+      const filename = urlParts[urlParts.length - 1];
+
+      setImgQuerySrc(url);
+      setUploadedImg(url);
+      setImgName(filename);
+
+      return filename;
     }
-
-    const { url } = await response.json();
-    const urlParts = url.split("/");
-    const filename = urlParts[urlParts.length - 1];
-
-    setImgQuerySrc(src);
-    setUploadedImg(url);
-    setImgName(filename);
   };
 
   const onCropSearchClick = async () => {
     if (completedCrop && imgRef.current) {
-      console.log("🚀 > onCropSearchClick > completedCrop=", completedCrop);
-      console.log("🚀 > onCropSearchClick > imgRef.current=", imgRef.current);
       try {
         const croppedImage = await getCroppedImage(
           imgRef.current,
           completedCrop
         );
-        console.log("🚀 > onCropSearchClick > croppedImage=", croppedImage);
-        const uploadResponse = await uploadImage(croppedImage);
+        const uploadResponse = await uploadImage(
+          croppedImage,
+          typeof imgQuerySrc === "string"
+        );
         await searchImage(uploadResponse);
         closeDisplayModal();
       } catch (error) {

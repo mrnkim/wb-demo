@@ -36,11 +36,6 @@ const SearchByImageButtonAndModal = ({
   setImgName
 }) => {
   const [imageUrlFromInput, setImageUrlFromInput] = useState("");
-  console.log(
-    "🚀 > SearchByImageButtonAndModal > imageUrlFromInput=",
-    imageUrlFromInput
-  );
-
   const [errorCode, setErrorCode] = useState();
   const [isHovering, setIsHovering] = useState(false);
 
@@ -74,7 +69,6 @@ const SearchByImageButtonAndModal = ({
       const trimmedUrl = imageUrlFromInput.trim();
 
       // Log the trimmed URL to check its format
-      console.log("Trimmed URL:", trimmedUrl);
 
       // Validate the URL format
       const url = new URL(trimmedUrl); // Throws an error if URL is invalid
@@ -212,11 +206,9 @@ const SearchByImageButtonAndModal = ({
               icon={<InsertLink className="text-grey-600" fontSize="small" />}
               value={imageUrlFromInput}
               onSelect={(e) => {
-                console.log("Input value:", e.target.value);
                 e.stopPropagation();
               }} // Stop event bubbling to its parent textfield
               onChange={(e) => {
-                console.log("Change event:", e); // Log the event object
                 setImageUrlFromInput(e.target.value);
               }}
               onClear={() => setImageUrlFromInput("")}
