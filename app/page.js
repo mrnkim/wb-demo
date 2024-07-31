@@ -8,11 +8,8 @@ export default function Home() {
   const [imgQuerySrc, setImgQuerySrc] = useState("");
   const [uploadedImg, setUploadedImg] = useState("");
   const [searchResultData, setSearchResultData] = useState(null);
-  console.log("🚀 > Home > searchResultData=", searchResultData);
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
-  console.log("🚀 > Home > updatedSearchData=", updatedSearchData)
   const [imgName, setImgName] = useState("");
-  console.log("🚀 > Home > imgName=", imgName)
 
   const clearImageQuery = async () => {
     setImgQuerySrc("");

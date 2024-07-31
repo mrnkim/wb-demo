@@ -6,7 +6,6 @@ import path from "path";
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const imgQuerySrc = searchParams.get("query");
-  console.log("🚀 > GET > imgQuerySrc=", imgQuerySrc);
   const searchData = [];
 
   if (!imgQuerySrc) {
@@ -44,13 +43,8 @@ export async function GET(req) {
       delete options.queryMediaFile; // Remove the file-based query option
     }
 
-    console.log("🚀 > GET > options=", options);
     // Perform the search query using the image buffer
     const imageResult = await client.search.query(options);
-    console.log("🚀 > GET > imageResult=", imageResult)
-
-    // Log the entire imageResult for debugging
-    console.log("imageResult:", imageResult);
 
     // Check if imageResult and imageResult.data are defined
     if (!imageResult || !imageResult.data) {

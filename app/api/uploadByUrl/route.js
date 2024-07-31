@@ -26,10 +26,9 @@ export async function POST(req) {
     // Save the image to a pre-existing temporary location
     const tempDir = path.join(process.cwd(), "tmp");
     const tempFilePath = path.join(tempDir, fileName);
-    console.log("🚀 > POST > tempFilePath=", tempFilePath);
     await fsPromises.writeFile(tempFilePath, imageBuffer);
 
-    return NextResponse.json({ url: tempFilePath });
+    return NextResponse.json({ downloadUrl: tempFilePath });
   } catch (error) {
     console.error("Error processing image URL:", error.message); // Log the error message
     return NextResponse.json(

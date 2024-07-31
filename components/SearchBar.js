@@ -37,36 +37,40 @@ const SearchBar = ({
             "Content-Type": "application/json",
           },
         });
-        console.log("🚀 > onImageSelected > response=", response);
         if (!response.ok) {
           console.error("Failed to fetch image through proxy");
           return;
         }
 
-        const { downloadUrl, fileName } = await response.json(); // Get fileName from response
-        console.log("🚀 > onImageSelected > downloadUrl=", downloadUrl);
-        const blob = await fetch(downloadUrl).then((res) => res.blob()); // Fetch the image blob directly from the temp URL
+        const { downloadUrl } = await response.json(); // Get fileName from response
+        const fileName = downloadUrl.split("/").pop(); // Simple method to get file name
 
-        const file = new File([blob], fileName, { type: blob.type });
+        // const imageUrl = `/api/serve-file?file=${encodeURIComponent(
+        //   downloadUrl
+        // )}`;
+        // console.log("🚀 > onImageSelected > imageUrl=", imageUrl)
+        // const blob = await fetch(imageUrl).then((res) => res.blob());
+        // const fileName = imageUrl.split("/").pop(); // Simple method to get file name
 
-        const formData = new FormData();
-        formData.append("file", file);
+        // const file = new File([blob], fileName, { type: blob.type });
 
-        const uploadResponse = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+        // const formData = new FormData();
+        // formData.append("file", file);
 
-        if (!uploadResponse.ok) {
-          console.error("Failed to upload image");
-          return;
-        }
+        // const uploadResponse = await fetch("/api/upload", {
+        //   method: "POST",
+        //   body: formData,
+        // });
 
-        const { url } = await uploadResponse.json();
-        console.log("🚀 > onImageSelected > url=", url);
-        setImgQuerySrc(url);
-        setUploadedImg(url);
-        setImgName(file.name);
+        // if (!uploadResponse.ok) {
+        //   console.error("Failed to upload image");
+        //   return;
+        // }
+
+        // const { url } = await uploadResponse.json();
+        setImgQuerySrc(downloadUrl);
+        setUploadedImg(downloadUrl);
+        setImgName(fileName);
       } catch (error) {
         console.error("Error processing image URL:", error);
       }
