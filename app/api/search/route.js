@@ -35,7 +35,7 @@ export async function GET(req) {
       queryMediaType: "image",
       options: ["visual"],
       threshold: "medium",
-      adjustConfidenceLevel: "0.6",
+      // adjustConfidenceLevel: "0.6",
     };
 
     if (!path.isAbsolute(imgQuerySrc)) {
@@ -56,15 +56,15 @@ export async function GET(req) {
 
     searchData.push(...imageResult.data);
 
-    // Ensure next() method and pageInfo are available
-    while (imageResult.next) {
-      const nextPageDataByImage = await imageResult.next();
-      if (nextPageDataByImage) {
-        searchData.push(...nextPageDataByImage);
-      } else {
-        break;
-      }
-    }
+    // // Ensure next() method and pageInfo are available
+    // while (imageResult.next) {
+    //   const nextPageDataByImage = await imageResult.next();
+    //   if (nextPageDataByImage) {
+    //     searchData.push(...nextPageDataByImage);
+    //   } else {
+    //     break;
+    //   }
+    // }
 
     // Ensure pageInfo is available
     const pageInfo = imageResult.pageInfo || {};

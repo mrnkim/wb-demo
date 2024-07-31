@@ -1,53 +1,76 @@
 import React, { useEffect, useState, useRef } from "react";
 import ReactPlayer from "react-player";
+import { useInView } from "react-intersection-observer";
 
 const SearchResultList = ({
   searchResultData,
   updatedSearchData,
   setUpdatedSearchData,
+  imgName,
 }) => {
   const [playingIndex, setPlayingIndex] = useState(null);
   const [clickedThumbnailIndex, setClickedThumbnailIndex] = useState(null);
-
+  const [nextPageToken, setNextPageToken] = useState(null);
   const playerRefs = useRef([]);
 
+  const fetchNextSearchResults = async () => {
+    try {
+      const response = await fetch(
+        `/api/searchByToken?pageToken=${nextPageToken}`
+      );
+      if (!response.ok) {
+        console.error("Failed to fetch next data");
+        return;
+      }
+
+      const { pageInfo, searchData } = await response.json();
+      if (pageInfo.nextPageToken) {
+        setNextPageToken(pageInfo.nextPageToken);
+      } else {
+        setNextPageToken(null); // No more pages
+      }
+
+      return { pageInfo, searchData };
+    } catch (error) {
+      console.error("Error getting next search results", error);
+    }
+  };
+
+  const fetchVideoDetails = async (data) => {
+    try {
+      const updatedData = await Promise.all(
+        data.map(async (clip) => {
+          const response = await fetch(`/api/getVideo?videoId=${clip.videoId}`);
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const videoDetail = await response.json();
+          return { ...clip, videoDetail: videoDetail };
+        })
+      );
+
+      return updatedData;
+    } catch (error) {
+      console.error("Failed to fetch video details:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchVideoDetails = async () => {
+    const updateSearchData = async () => {
       if (searchResultData) {
-        try {
-          const videoIds = new Set(
-            searchResultData.searchData.map((clip) => clip.videoId)
-          );
-
-          const updatedData = await Promise.all(
-            searchResultData?.searchData?.map(async (clip) => {
-              const response = await fetch(
-                `/api/getVideo?videoId=${clip.videoId}`
-              );
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              const videoDetail = await response.json();
-              return { ...clip, videoDetail: videoDetail };
-            })
-          );
-
-          setUpdatedSearchData({
-            ...searchResultData,
-            pageInfo: {
-              ...searchResultData.pageInfo,
-              totalVideos: videoIds.size, // Count of unique video IDs
-            },
-            searchData: updatedData,
-          });
-        } catch (error) {
-          console.error("Failed to fetch video details:", error);
-        }
+        const updatedData = await fetchVideoDetails(
+          searchResultData.searchData
+        );
+        setUpdatedSearchData({
+          ...searchResultData,
+          searchData: updatedData,
+        });
+        setNextPageToken(searchResultData.pageInfo.nextPageToken);
       }
     };
 
-    fetchVideoDetails();
-  }, [searchResultData, setUpdatedSearchData]);
+    updateSearchData();
+  }, [searchResultData, imgName, setUpdatedSearchData]);
 
   const handleProgress = (state, index, end) => {
     if (state.playedSeconds >= end && index === playingIndex) {
@@ -66,6 +89,32 @@ const SearchResultList = ({
     }
   };
 
+  const handleNextPage = async () => {
+    const result = await fetchNextSearchResults();
+    if (result && result.searchData) {
+      const updatedData = await fetchVideoDetails(result.searchData);
+      setUpdatedSearchData((prevData) => ({
+        ...prevData,
+        searchData: [...prevData.searchData, ...updatedData],
+        pageInfo: {
+          ...prevData.pageInfo,
+          ...result.pageInfo,
+        },
+      }));
+    }
+  };
+
+  const { ref: observerRef, inView } = useInView({
+    threshold: 1.0,
+    triggerOnce: false,
+  });
+
+  useEffect(() => {
+    if (inView && nextPageToken) {
+      handleNextPage();
+    }
+  }, [inView, nextPageToken]);
+
   return (
     <div className="flex flex-wrap -mx-2">
       {updatedSearchData?.searchData?.map((clip, index) => (
@@ -81,9 +130,9 @@ const SearchResultList = ({
               <>
                 <div
                   onClick={() => {
-                    setClickedThumbnailIndex(index); // Set clicked thumbnail index
+                    setClickedThumbnailIndex(index);
                     if (playingIndex !== index) {
-                      setPlayingIndex(index); // Set playing index to start playback
+                      setPlayingIndex(index);
                     }
                   }}
                   style={{ cursor: "pointer" }}
@@ -94,7 +143,7 @@ const SearchResultList = ({
                     controls
                     width="100%"
                     height="100%"
-                    playing={playingIndex === index} // Controls playback
+                    playing={playingIndex === index}
                     onPlay={() => handlePlay(index, Math.floor(clip.start))}
                     onProgress={(state) =>
                       handleProgress(state, index, Math.floor(clip.end))
@@ -127,6 +176,10 @@ const SearchResultList = ({
           </div>
         </div>
       ))}
+
+      <div ref={observerRef} className="w-full text-center py-4">
+        {nextPageToken && <p>Loading more...</p>}
+      </div>
     </div>
   );
 };

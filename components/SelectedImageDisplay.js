@@ -186,7 +186,8 @@ const SelectedImageDisplay = ({
       const urlParts = imgQuerySrc.split("/");
       const originalFilename =
         imgQuerySrc.split("/")[imgQuerySrc.split("/") - 1];
-      const croppedFilename = `${originalFilename}-cropped`;
+      const timestamp = Date.now(); // Generate a timestamp
+      const croppedFilename = `${originalFilename}-cropped-${timestamp}`;
 
       const response = await fetch("/api/uploadByUrl", {
         method: "POST",
@@ -211,7 +212,9 @@ const SelectedImageDisplay = ({
       // If the image source is a Data URL, upload via the upload route
       const blob = dataURLToBlob(src);
       const formData = new FormData();
-      formData.append("file", blob, `${imgName}_cropped`);
+      const timestamp = Date.now(); // Generate a timestamp
+
+      formData.append("file", blob, `${imgName}-cropped-${timestamp}`);
 
       const response = await fetch("/api/upload", {
         method: "POST",

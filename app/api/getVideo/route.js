@@ -16,7 +16,7 @@ export async function GET(req) {
     );
   }
 
-  const client = new TwelveLabs({ apiKey: process.env.TWELVELABS_API_KEY });
+  const client = new TwelveLabs({ apiKey });
 
   try {
     let video = await client.index.video.retrieve(indexId, videoId);

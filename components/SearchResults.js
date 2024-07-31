@@ -12,6 +12,10 @@ const SearchResults = ({
   searchImage,
   imgName,
 }) => {
+  useEffect(() => {
+    console.log("img updated:", imgName);
+  }, [imgName]);
+  
   return (
     <div>
       <p>

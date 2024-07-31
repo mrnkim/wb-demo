@@ -27,6 +27,7 @@
     "react-dropzone": "^14.2.3",
     "react-image-crop": "^11.0.6",
     "react-infinite-scroller": "^1.2.6",
+    "react-intersection-observer": "^9.13.0",
     "react-player": "^2.16.0",
     "twelvelabs-js": "^0.2.5",
     "video.js": "^8.16.1",
