@@ -29,8 +29,17 @@ const getErrorMessage = (code) => {
   }
 };
 
-const SearchByImageButtonAndModal = ({ onImageSelected }) => {
+const SearchByImageButtonAndModal = ({
+  onImageSelected,
+  searchImage,
+  setImgQuerySrc,
+  setImgName
+}) => {
   const [imageUrlFromInput, setImageUrlFromInput] = useState("");
+  console.log(
+    "🚀 > SearchByImageButtonAndModal > imageUrlFromInput=",
+    imageUrlFromInput
+  );
 
   const [errorCode, setErrorCode] = useState();
   const [isHovering, setIsHovering] = useState(false);
@@ -60,17 +69,31 @@ const SearchByImageButtonAndModal = ({ onImageSelected }) => {
   });
 
   const handleImageUrl = () => {
-    // Validate the URL or check if it’s a valid URL
     try {
-      new URL(imageUrlFromInput); // Throws an error if URL is invalid
-      if (typeof onImageSelected === "function") {
-        onImageSelected(imageUrlFromInput);
-        closeModal();
-      } else {
-        console.error("onImageSelected is not a function");
+      // Trim the input to remove any leading/trailing whitespace
+      const trimmedUrl = imageUrlFromInput.trim();
+
+      // Log the trimmed URL to check its format
+      console.log("Trimmed URL:", trimmedUrl);
+
+      // Validate the URL format
+      const url = new URL(trimmedUrl); // Throws an error if URL is invalid
+
+      // Check if the URL seems to point to an image by inspecting its extension or query parameters
+      const isImage =
+        /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(trimmedUrl) ||
+        /f=image|f=auto/.test(trimmedUrl);
+      if (!isImage) {
+        console.error("URL does not appear to point to an image");
+        return;
       }
-    } catch {
-      console.error("Invalid URL");
+      // setImgQuerySrc(trimmedUrl);
+      // setImgName(trimmedUrl.split("/")[trimmedUrl.split("/").length - 1]);
+      // searchImage(trimmedUrl);
+      onImageSelected(trimmedUrl)
+      closeModal();
+    } catch (e) {
+      console.error("Invalid URL", e);
     }
   };
 

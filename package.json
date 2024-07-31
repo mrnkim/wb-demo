@@ -20,6 +20,7 @@
     "fs": "^0.0.1-security",
     "lodash": "^4.17.21",
     "next": "14.2.5",
+    "node-fetch": "^3.3.2",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",

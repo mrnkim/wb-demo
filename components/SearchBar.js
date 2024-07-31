@@ -16,6 +16,7 @@ const SearchBar = ({
   clearImageQuery,
   uploadedImg,
 }) => {
+  console.log("🚀 > imgQuerySrc=", imgQuerySrc);
   // const [imgName, setImgName] = useState("");
 
   // const clearImageQuery = async () => {
@@ -25,7 +26,51 @@ const SearchBar = ({
 
   //TODO: Merge with uploadImage in SelectedImageDisplay.js
   const onImageSelected = async (src) => {
-    if (src instanceof File) {
+    if (typeof src === "string") {
+      // src is an image URL; download and upload the image
+      try {
+        // Proxy the image request through your server
+        const response = await fetch("/api/uploadByUrl", {
+          method: "POST",
+          body: JSON.stringify({ url: src }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log("🚀 > onImageSelected > response=", response);
+        if (!response.ok) {
+          console.error("Failed to fetch image through proxy");
+          return;
+        }
+
+        const { downloadUrl, fileName } = await response.json(); // Get fileName from response
+        console.log("🚀 > onImageSelected > downloadUrl=", downloadUrl);
+        const blob = await fetch(downloadUrl).then((res) => res.blob()); // Fetch the image blob directly from the temp URL
+
+        const file = new File([blob], fileName, { type: blob.type });
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          console.error("Failed to upload image");
+          return;
+        }
+
+        const { url } = await uploadResponse.json();
+        console.log("🚀 > onImageSelected > url=", url);
+        setImgQuerySrc(url);
+        setUploadedImg(url);
+        setImgName(file.name);
+      } catch (error) {
+        console.error("Error processing image URL:", error);
+      }
+    } else if (src instanceof File) {
       const formData = new FormData();
       formData.append("file", src);
 
@@ -105,7 +150,12 @@ const SearchBar = ({
       </div>
       <div className="flex items-center gap-2">
         <div className="w-px h-6 bg-[#d9d9d9]" />
-        <SearchByImageButtonAndModal onImageSelected={onImageSelected} />
+        <SearchByImageButtonAndModal
+          onImageSelected={onImageSelected}
+          searchImage={searchImage}
+          setImgQuerySrc={setImgQuerySrc}
+          setImgName={setImgName}
+        />
         {/* <div className="px-3 py-2 rounded flex items-center">
           <button className="flex items-center">
             <img

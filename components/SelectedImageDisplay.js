@@ -54,10 +54,30 @@ const SelectedImageDisplay = ({
       return () => {
         URL.revokeObjectURL(objectUrl);
       };
-    } else {
-      setImageSrc(imgQuerySrc);
+    } else if (typeof imgQuerySrc === "string") {
+      fetchImageAsBlob(imgQuerySrc)
+        .then(blobToDataURL)
+        .then((dataURL) => setImageSrc(dataURL))
+        .catch((error) => console.error("Error fetching image:", error));
     }
   }, [imgQuerySrc]);
+
+  const fetchImageAsBlob = async (url) => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("Failed to fetch image");
+    }
+    return await response.blob();
+  };
+
+  const blobToDataURL = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
 
   if (!imageSrc) {
     return <Skeleton variant="text" width={240} height={36} />;
@@ -112,6 +132,7 @@ const SelectedImageDisplay = ({
         crop.height
       );
 
+      console.log("🚀 > returnnewPromise > canvas=", canvas);
       try {
         const dataUrl = canvas.toDataURL("image/jpeg");
         resolve(dataUrl);
@@ -160,11 +181,14 @@ const SelectedImageDisplay = ({
 
   const onCropSearchClick = async () => {
     if (completedCrop && imgRef.current) {
+      console.log("🚀 > onCropSearchClick > completedCrop=", completedCrop);
+      console.log("🚀 > onCropSearchClick > imgRef.current=", imgRef.current);
       try {
         const croppedImage = await getCroppedImage(
           imgRef.current,
           completedCrop
         );
+        console.log("🚀 > onCropSearchClick > croppedImage=", croppedImage);
         const uploadResponse = await uploadImage(croppedImage);
         await searchImage(uploadResponse);
         closeDisplayModal();

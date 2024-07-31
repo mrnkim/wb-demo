@@ -12,6 +12,7 @@ export default function Home() {
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
   console.log("🚀 > Home > updatedSearchData=", updatedSearchData)
   const [imgName, setImgName] = useState("");
+  console.log("🚀 > Home > imgName=", imgName)
 
   const clearImageQuery = async () => {
     setImgQuerySrc("");
@@ -37,7 +38,7 @@ export default function Home() {
         uploadedImg={uploadedImg}
       />
       {!uploadedImg && <Videos />}
-      {uploadedImg && searchResultData && (
+      {searchResultData && (
         <SearchResults
           imgQuerySrc={imgQuerySrc}
           uploadedImg={uploadedImg}
