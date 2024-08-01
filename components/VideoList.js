@@ -2,10 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import ReactPlayer from "react-player";
 
 const VideoList = ({ videos, page }) => {
-  const [playingIndex, setPlayingIndex] = useState(null);
-  const [nextPageToken, setNextPageToken] = useState(null);
   const [updatedVideos, setUpdatedVideos] = useState(null);
-  console.log("🚀 > VideoList > updatedVideos=", updatedVideos);
 
   const fetchVideoDetails = async () => {
     try {

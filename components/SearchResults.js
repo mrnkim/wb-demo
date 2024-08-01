@@ -15,15 +15,15 @@ const SearchResults = ({
   useEffect(() => {
     console.log("img updated:", imgName);
   }, [imgName]);
-  
+
   return (
     <div>
       <p>
         Search result {updatedSearchData?.pageInfo?.totalVideos}
         {updatedSearchData?.pageInfo?.totalVideos > 1
           ? "videos"
-          : "video"}, {updatedSearchData?.pageInfo?.totalResults}{" "}
-        {updatedSearchData?.pageInfo?.totalResults > 1 ? "matches" : "match"},{" "}
+          : "video"}, {updatedSearchData?.pageInfo?.total_results}{" "}
+        {updatedSearchData?.pageInfo?.total_results > 1 ? "matches" : "match"},{" "}
       </p>
       <SearchResultList
         searchResultData={searchResultData}

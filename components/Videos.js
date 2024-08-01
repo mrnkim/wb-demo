@@ -6,7 +6,6 @@ import VideoList from "./VideoList";
 
 const Videos = () => {
   const [videosData, setVideosData] = useState(null);
-  console.log("🚀 > Videos > videosData=", videosData);
   const [page, setPage] = useState(1);
 
   const fetchVideos = async () => {
@@ -18,7 +17,6 @@ const Videos = () => {
       }
       const result = await response.json();
       setVideosData(result);
-      console.log("🚀 > fetchVideos > result=", result);
     } catch (error) {
       console.error(error);
     }

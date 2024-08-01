@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { TwelveLabs } from "twelvelabs-js";
 
 export async function GET(req) {
-  console.log("🚀 > GET > req=", req);
   const { searchParams } = new URL(req.url);
   const videoId = searchParams.get("videoId");
 
@@ -21,7 +19,6 @@ export async function GET(req) {
 
   const url = `https://api.twelvelabs.io/tl/playground/samples/v1.2/indexes/${indexId}/videos/${videoId}`;
 
-  console.log("🚀 > GET > url=", url);
   const options = {
     method: "GET",
     headers: {

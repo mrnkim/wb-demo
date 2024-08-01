@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { TwelveLabs, SearchData } from "twelvelabs-js";
 import * as fs from "fs";
-import path from "path";
+import FormData from "form-data";
+import axios from "axios";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const imgQuerySrc = searchParams.get("query");
-  const searchData = [];
 
   if (!imgQuerySrc) {
     return NextResponse.json(
@@ -26,27 +25,45 @@ export async function GET(req) {
     );
   }
 
-  const client = new TwelveLabs({ apiKey });
-
   try {
-    const options = {
-      indexId,
-      queryMediaFile: fs.createReadStream(imgQuerySrc),
-      queryMediaType: "image",
-      options: ["visual"],
-      threshold: "medium",
-      // adjustConfidenceLevel: "0.6",
-    };
+    const formData = new FormData();
+    formData.append("search_options", "visual");
+    formData.append("adjust_confidence_level", "0.55");
+    formData.append("group_by", "clip");
+    formData.append("threshold", "medium");
+    formData.append("sort_option", "score");
+    formData.append("page_limit", "12");
+    formData.append("index_id", indexId);
+    formData.append("query_media_type", "image");
 
-    if (!path.isAbsolute(imgQuerySrc)) {
-      options.queryMediaUrl = imgQuerySrc; // Ensure the URL is set properly for URL-based query
-      delete options.queryMediaFile; // Remove the file-based query option
+    // Check if the query is a URL or a file path
+    if (imgQuerySrc.startsWith("http")) {
+      formData.append("query_media_url", imgQuerySrc);
+    } else {
+      const filePath = imgQuerySrc;
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`File not found: ${filePath}`);
+      }
+      formData.append("query_media_file", fs.createReadStream(filePath));
     }
 
-    // Perform the search query using the image buffer
-    const imageResult = await client.search.query(options);
+    // Convert FormData to an object that axios can handle
+    const formDataHeaders = formData.getHeaders();
 
-    // Check if imageResult and imageResult.data are defined
+    const url =
+      "https://api.twelvelabs.io/tl/playground/samples/v1.2/search-v2";
+
+    // Make POST request with axios
+    const response = await axios.post(url, formData, {
+      headers: {
+        ...formDataHeaders,
+        accept: "application/json",
+        "x-api-key": apiKey,
+      },
+    });
+
+    const imageResult = response.data;
+
     if (!imageResult || !imageResult.data) {
       return NextResponse.json(
         { error: "Unexpected response structure from search query" },
@@ -54,25 +71,15 @@ export async function GET(req) {
       );
     }
 
-    searchData.push(...imageResult.data);
+    const searchData = imageResult.data;
+    const pageInfo = imageResult.page_info || {};
 
-    // // Ensure next() method and pageInfo are available
-    // while (imageResult.next) {
-    //   const nextPageDataByImage = await imageResult.next();
-    //   if (nextPageDataByImage) {
-    //     searchData.push(...nextPageDataByImage);
-    //   } else {
-    //     break;
-    //   }
-    // }
-
-    // Ensure pageInfo is available
-    const pageInfo = imageResult.pageInfo || {};
     return NextResponse.json({
       pageInfo,
       searchData,
     });
   } catch (error) {
+    console.error("Error in GET handler:", error);
     return NextResponse.json(
       { error: error.message || error.toString() },
       { status: 500 }

@@ -1,36 +1,38 @@
 import { NextResponse } from "next/server";
-import { TwelveLabs } from "twelvelabs-js";
+import axios from "axios";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const pageToken = searchParams.get("pageToken");
-  console.log("🚀 > GET > pageToken=", pageToken);
 
   if (!pageToken) {
     return NextResponse.json(
-      { error: "page token is required" },
+      { error: "Page token is required" },
       { status: 400 }
     );
   }
 
   // Ensure environment variables are set
   const apiKey = process.env.TWELVELABS_API_KEY;
-  const indexId = process.env.TWELVELABS_INDEX_ID;
 
-  if (!apiKey || !indexId) {
-    return NextResponse.json(
-      { error: "API key or Index ID is not set" },
-      { status: 500 }
-    );
+  if (!apiKey) {
+    return NextResponse.json({ error: "API key is not set" }, { status: 500 });
   }
 
-  const client = new TwelveLabs({ apiKey });
+  const url = `https://api.twelvelabs.io/tl/playground/samples/v1.2/search-v2/${pageToken}`;
 
   try {
-    let searchResults = await client.search.byPageToken(pageToken);
-    console.log("🚀 > GET > searchResults=", searchResults);
+    // Make GET request to the Twelve Labs API
+    const response = await axios.get(url, {
+      headers: {
+        accept: "application/json",
+        "x-api-key": apiKey,
+      },
+    });
 
-    // Check if imageResult and imageResult.data are defined
+    const searchResults = response.data;
+
+    // Check if searchResults and searchResults.data are defined
     if (!searchResults || !searchResults.data) {
       return NextResponse.json(
         { error: "Unexpected response structure from search query" },
@@ -38,13 +40,13 @@ export async function GET(req) {
       );
     }
 
-    const pageInfo = searchResults.pageInfo || {};
-    console.log("🚀 > GET > pageInfo=", pageInfo);
+    const pageInfo = searchResults.page_info || {};
     return NextResponse.json({
       pageInfo,
       searchData: searchResults.data,
     });
   } catch (error) {
+    console.error("Error in GET handler:", error);
     return NextResponse.json(
       { error: error.message || error.toString() },
       { status: 500 }

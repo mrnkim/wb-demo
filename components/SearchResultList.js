@@ -24,8 +24,8 @@ const SearchResultList = ({
       }
 
       const { pageInfo, searchData } = await response.json();
-      if (pageInfo.nextPageToken) {
-        setNextPageToken(pageInfo.nextPageToken);
+      if (pageInfo.next_page_token) {
+        setNextPageToken(pageInfo.next_page_token);
       } else {
         setNextPageToken(null); // No more pages
       }
@@ -40,7 +40,9 @@ const SearchResultList = ({
     try {
       const updatedData = await Promise.all(
         data.map(async (clip) => {
-          const response = await fetch(`/api/getVideo?videoId=${clip.videoId}`);
+          const response = await fetch(
+            `/api/getVideo?videoId=${clip.video_id}`
+          );
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
@@ -65,7 +67,7 @@ const SearchResultList = ({
           ...searchResultData,
           searchData: updatedData,
         });
-        setNextPageToken(searchResultData.pageInfo.nextPageToken);
+        setNextPageToken(searchResultData.pageInfo.next_page_token);
       }
     };
 
@@ -126,7 +128,7 @@ const SearchResultList = ({
                 {Math.floor(clip.start)}, {Math.floor(clip.end)}
               </span>
             </div>
-            {clip.videoDetail?.hls?.videoUrl && (
+            {clip.videoDetail?.hls?.video_url && (
               <>
                 <div
                   onClick={() => {
@@ -139,7 +141,7 @@ const SearchResultList = ({
                 >
                   <ReactPlayer
                     ref={(el) => (playerRefs.current[index] = el)}
-                    url={clip.videoDetail.hls.videoUrl}
+                    url={clip.videoDetail.hls.video_url}
                     controls
                     width="100%"
                     height="100%"
@@ -150,7 +152,7 @@ const SearchResultList = ({
                     }
                     light={
                       <img
-                        src={clip.thumbnailUrl}
+                        src={clip.thumbnail_url}
                         width="100%"
                         height="100%"
                         alt="thumbnail"
