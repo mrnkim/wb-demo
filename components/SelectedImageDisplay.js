@@ -18,7 +18,9 @@ import "react-image-crop/dist/ReactCrop.css";
 const fetchImageAsBlob = async (filePath) => {
   // Construct the URL for the serve-file API route
 
-  const response = await fetch(`/api/serve-file?file=${encodeURIComponent(filePath)}`);
+  const response = await fetch(
+    `/api/serve-file?file=${encodeURIComponent(filePath)}`
+  );
   if (!response.ok) {
     throw new Error("Failed to fetch image");
   }

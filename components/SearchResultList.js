@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import ReactPlayer from "react-player";
 import { useInView } from "react-intersection-observer";
+import LoadingSpinner from "./LoadingSpinner";
+import ErrorFallback from "./ErrorFallback";
 
 const SearchResultList = ({
   searchResultData,
@@ -8,19 +10,24 @@ const SearchResultList = ({
   setUpdatedSearchData,
   imgName,
 }) => {
+  const [nextPageLoading, setNextPageLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [playingIndex, setPlayingIndex] = useState(null);
   const [clickedThumbnailIndex, setClickedThumbnailIndex] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
   const playerRefs = useRef([]);
+  const loadingRef = useRef();
 
   const fetchNextSearchResults = async () => {
+    setNextPageLoading(true);
+    setError(null);
+
     try {
       const response = await fetch(
         `/api/searchByToken?pageToken=${nextPageToken}`
       );
       if (!response.ok) {
-        console.error("Failed to fetch next data");
-        return;
+        throw new Error("Failed to fetch next data");
       }
 
       const { pageInfo, searchData } = await response.json();
@@ -33,6 +40,9 @@ const SearchResultList = ({
       return { pageInfo, searchData };
     } catch (error) {
       console.error("Error getting next search results", error);
+      setError(error.message);
+    } finally {
+      setNextPageLoading(false);
     }
   };
 
@@ -54,20 +64,29 @@ const SearchResultList = ({
       return updatedData;
     } catch (error) {
       console.error("Failed to fetch video details:", error);
+      setError(error.message);
     }
   };
 
   useEffect(() => {
     const updateSearchData = async () => {
       if (searchResultData) {
-        const updatedData = await fetchVideoDetails(
-          searchResultData.searchData
-        );
-        setUpdatedSearchData({
-          ...searchResultData,
-          searchData: updatedData,
-        });
-        setNextPageToken(searchResultData.pageInfo.next_page_token);
+        setNextPageLoading(true);
+        setError(null);
+        try {
+          const updatedData = await fetchVideoDetails(
+            searchResultData.searchData
+          );
+          setUpdatedSearchData({
+            ...searchResultData,
+            searchData: updatedData,
+          });
+          setNextPageToken(searchResultData.pageInfo.next_page_token);
+        } catch (error) {
+          setError(error.message);
+        } finally {
+          setNextPageLoading(false);
+        }
       }
     };
 
@@ -116,6 +135,14 @@ const SearchResultList = ({
       handleNextPage();
     }
   }, [inView, nextPageToken]);
+
+  if (nextPageLoading && !updatedSearchData) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorFallback message={error} />;
+  }
 
   return (
     <div className="flex flex-wrap -mx-2">
@@ -180,7 +207,7 @@ const SearchResultList = ({
       ))}
 
       <div ref={observerRef} className="w-full text-center py-4">
-        {nextPageToken && <p>Loading more...</p>}
+        {nextPageToken && <LoadingSpinner />}
       </div>
     </div>
   );

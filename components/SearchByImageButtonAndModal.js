@@ -33,7 +33,7 @@ const SearchByImageButtonAndModal = ({
   onImageSelected,
   searchImage,
   setImgQuerySrc,
-  setImgName
+  setImgName,
 }) => {
   const [imageUrlFromInput, setImageUrlFromInput] = useState("");
   const [errorCode, setErrorCode] = useState();
@@ -84,7 +84,7 @@ const SearchByImageButtonAndModal = ({
       // setImgQuerySrc(trimmedUrl);
       // setImgName(trimmedUrl.split("/")[trimmedUrl.split("/").length - 1]);
       // searchImage(trimmedUrl);
-      onImageSelected(trimmedUrl)
+      onImageSelected(trimmedUrl);
       closeModal();
     } catch (e) {
       console.error("Invalid URL", e);

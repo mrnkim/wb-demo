@@ -1,8 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "./ErrorFallback";
+import LoadingSpinner from "./LoadingSpinner";
 
 const VideoList = ({ videos, page }) => {
   const [updatedVideos, setUpdatedVideos] = useState(null);
+  const [videoLoading, setVideoLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchVideoDetails = async () => {
     try {
@@ -17,8 +22,11 @@ const VideoList = ({ videos, page }) => {
         })
       );
       setUpdatedVideos(updatedVideos);
+      setVideoLoading(false);
     } catch (error) {
       console.error("Failed to fetch video details:", error);
+      setError(error);
+      setVideoLoading(false);
     }
   };
 
@@ -28,10 +36,10 @@ const VideoList = ({ videos, page }) => {
     const secs = seconds % 60;
 
     return [
-      hours.toString().padStart(2, '0'),
-      minutes.toString().padStart(2, '0'),
-      secs.toString().padStart(2, '0')
-    ].join(':');
+      hours.toString().padStart(2, "0"),
+      minutes.toString().padStart(2, "0"),
+      secs.toString().padStart(2, "0"),
+    ].join(":");
   };
 
   useEffect(() => {
@@ -40,13 +48,26 @@ const VideoList = ({ videos, page }) => {
     }
   }, [videos, page]); // Ensure the effect runs when videos or page changes
 
+  if (videoLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorFallback error={error} />;
+  }
+
   return (
     <div className="flex flex-wrap -mx-2">
       {updatedVideos?.map((video, index) => (
-        <div key={index} className="w-full md:w-1/3 px-2 mb-4">
+        <div
+          key={video._id + "-" + index}
+          className="w-full md:w-1/3 px-2 mb-4"
+        >
           <div className="p-2">
             <div className="text-center mb-2">
-              <span className="text-gray-700">{formatDuration(video.metadata.duration)}</span>
+              <span className="text-gray-700">
+                {formatDuration(video.metadata.duration)}
+              </span>
             </div>
             {video.videoDetail?.hls?.video_url && (
               <>
@@ -86,4 +107,10 @@ const VideoList = ({ videos, page }) => {
   );
 };
 
-export default VideoList;
+const VideoListWithErrorBoundary = (props) => (
+  <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <VideoList {...props} />
+  </ErrorBoundary>
+);
+
+export default VideoListWithErrorBoundary;
