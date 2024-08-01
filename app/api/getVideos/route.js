@@ -1,0 +1,40 @@
+import { NextResponse } from "next/server";
+
+export async function GET(req) {
+  const apiKey = process.env.TWELVELABS_API_KEY;
+  const indexId = process.env.TWELVELABS_INDEX_ID;
+
+  if (!apiKey || !indexId) {
+    return NextResponse.json(
+      { error: "API key or Index ID is not set" },
+      { status: 500 }
+    );
+  }
+
+  const url = `https://api.twelvelabs.io/tl/playground/samples/v1.2/indexes/${indexId}/videos?page_limit=12`;
+
+  const options = {
+    method: "GET",
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "x-api-key": `${apiKey}`,
+    },
+  };
+
+  try {
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}

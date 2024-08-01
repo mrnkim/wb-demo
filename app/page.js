@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import SearchResults from "@/components/SearchResults";
 import Videos from "@/components/Videos";
@@ -10,6 +10,7 @@ export default function Home() {
   const [searchResultData, setSearchResultData] = useState(null);
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
   const [imgName, setImgName] = useState("");
+  const [videos, setVideos] = useState(null)
 
   const clearImageQuery = async () => {
     setImgQuerySrc("");
@@ -18,6 +19,24 @@ export default function Home() {
     setUpdatedSearchData("");
     setImgName("");
   };
+
+  const fetchVideos = async () => {
+    try {
+      const response = await fetch(`api/getVideos`);
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const result = await response.json();
+      console.log("🚀 > fetchVideos > result=", result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -34,7 +53,7 @@ export default function Home() {
         clearImageQuery={clearImageQuery}
         uploadedImg={uploadedImg}
       />
-      {!uploadedImg && <Videos />}
+      {!uploadedImg && <Videos videos={videos} />}
       {searchResultData && (
         <SearchResults
           imgQuerySrc={imgQuerySrc}
