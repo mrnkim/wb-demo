@@ -22,6 +22,18 @@ const VideoList = ({ videos, page }) => {
     }
   };
 
+  const formatDuration = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return [
+      hours.toString().padStart(2, '0'),
+      minutes.toString().padStart(2, '0'),
+      secs.toString().padStart(2, '0')
+    ].join(':');
+  };
+
   useEffect(() => {
     if (videos && videos.length > 0) {
       fetchVideoDetails();
@@ -34,7 +46,7 @@ const VideoList = ({ videos, page }) => {
         <div key={index} className="w-full md:w-1/3 px-2 mb-4">
           <div className="p-2">
             <div className="text-center mb-2">
-              <span className="text-gray-700">{video.metadata.duration}</span>
+              <span className="text-gray-700">{formatDuration(video.metadata.duration)}</span>
             </div>
             {video.videoDetail?.hls?.video_url && (
               <>
