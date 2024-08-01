@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import ReactPlayer from "react-player";
 import { useInView } from "react-intersection-observer";
 import PageNav from "./PageNav";
@@ -42,19 +42,20 @@ const Videos = () => {
   }, [page]);
 
   const durationString = indexData
-    ? `Total ${Math.floor(indexData.total_duration / 60)}h ${
-        indexData.total_duration % 60
+    ? `Total ${Math.floor(indexData?.total_duration / 60)}h ${
+        indexData?.total_duration % 60
       }min`
     : "";
 
   return (
     <div>
-      <p>Videos in {indexData?.index_name}</p>
-      <p>
-        {indexData?.video_count} videos ({durationString})
-      </p>
-      <VideoList videos={videosData?.data} page={page} />
-      <PageNav videosData={videosData} page={page} setPage={setPage} />
+          <p>Videos in {indexData?.index_name}</p>
+          <p>
+            {indexData?.video_count} videos ({durationString})
+          </p>
+          <VideoList videos={videosData?.data} page={page} />
+          <PageNav videosData={videosData} page={page} setPage={setPage} />
+
     </div>
   );
 };
