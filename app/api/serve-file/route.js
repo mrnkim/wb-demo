@@ -6,7 +6,10 @@ import fs from "fs";
 export async function GET(req) {
   const filePath = req.nextUrl.searchParams.get("file");
 
+  console.log("Received filePath:", filePath);
+
   if (!filePath) {
+    console.error("Error: File path is not provided");
     return NextResponse.json(
       { error: "File path is required" },
       { status: 400 }
@@ -17,18 +20,33 @@ export async function GET(req) {
   const fileName = path.basename(filePath);
   const resolvedFilePath = path.join(process.cwd(), "tmp", fileName);
 
+  console.log("Resolved file path:", resolvedFilePath);
+
   if (!fs.existsSync(resolvedFilePath)) {
+    console.error("Error: File not found at", resolvedFilePath);
     return NextResponse.json({ error: "File not found" }, { status: 404 });
   }
 
-  // Read the file
-  const fileBuffer = fs.readFileSync(resolvedFilePath);
-  const contentType = "image/jpeg"; // Adjust based on file type
+  try {
+    // Read the file
+    const fileBuffer = fs.readFileSync(resolvedFilePath);
 
-  return new NextResponse(fileBuffer, {
-    headers: {
-      "Content-Type": contentType,
-      "Content-Disposition": `attachment; filename="${fileName}"`,
-    },
-  });
+    console.log("File read successfully:", resolvedFilePath);
+
+    // Use global encodeURIComponent directly
+    const encodedFileName = encodeURIComponent(fileName);
+
+    return new NextResponse(fileBuffer, {
+      headers: {
+        "Content-Type": "image/jpeg", // Adjust based on file type
+        "Content-Disposition": `attachment; filename*=utf-8''${encodedFileName}`,
+      },
+    });
+  } catch (error) {
+    console.error("Error reading file:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 }

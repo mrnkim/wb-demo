@@ -17,9 +17,8 @@ import "react-image-crop/dist/ReactCrop.css";
 // Helper function to fetch image as a blob using the serve-file API route
 const fetchImageAsBlob = async (filePath) => {
   // Construct the URL for the serve-file API route
-  const apiUrl = `/api/serve-file?file=${encodeURIComponent(filePath)}`;
 
-  const response = await fetch(apiUrl);
+  const response = await fetch(`/api/serve-file?file=${encodeURIComponent(filePath)}`);
   if (!response.ok) {
     throw new Error("Failed to fetch image");
   }
@@ -83,27 +82,6 @@ const SelectedImageDisplay = ({
         .catch((error) => console.error("Error fetching image:", error));
     }
   }, [imgQuerySrc]);
-
-  // const fetchImageAsBlob = async (filePath) => {
-  //   // Construct the URL for the serve-file API route
-  //   const apiUrl = `/api/serve-file?file=${encodeURIComponent(filePath)}`;
-
-  //   const response = await fetch(apiUrl);
-  //   if (!response.ok) {
-  //     throw new Error("Failed to fetch image");
-  //   }
-  //   return await response.blob();
-  // };
-
-  // // Convert a blob to a data URL
-  // const blobToDataURL = (blob) => {
-  //   return new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => resolve(reader.result);
-  //     reader.onerror = reject;
-  //     reader.readAsDataURL(blob);
-  //   });
-  // };
 
   if (!imageSrc) {
     return <Skeleton variant="text" width={240} height={36} />;
