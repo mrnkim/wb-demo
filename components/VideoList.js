@@ -9,6 +9,7 @@ const VideoList = ({ videos, page }) => {
   const [updatedVideos, setUpdatedVideos] = useState(null);
   const [videoLoading, setVideoLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [playingVideoId, setPlayingVideoId] = useState(null);
 
   const fetchVideoDetails = async () => {
     try {
@@ -43,11 +44,15 @@ const VideoList = ({ videos, page }) => {
     ].join(":");
   };
 
+  const handleThumbnailClick = (videoId) => {
+    setPlayingVideoId(videoId);
+  };
+
   useEffect(() => {
     if (videos && videos.length > 0) {
       fetchVideoDetails();
     }
-  }, [videos, page]); // Ensure the effect runs when videos or page changes
+  }, [videos, page]);
 
   if (videoLoading) {
     return <LoadingSpinner />;
@@ -65,7 +70,10 @@ const VideoList = ({ videos, page }) => {
           className="w-full md:w-1/3 px-2 mb-4"
         >
           <div className="relative p-2">
-            <div className="w-full h-40 relative overflow-hidden rounded">
+            <div
+              className="w-full h-40 relative overflow-hidden rounded cursor-pointer"
+              onClick={() => handleThumbnailClick(video._id)}
+            >
               <ReactPlayer
                 url={video.videoDetail.hls.video_url}
                 controls
@@ -78,6 +86,7 @@ const VideoList = ({ videos, page }) => {
                     alt="thumbnail"
                   />
                 }
+                playing={playingVideoId === video._id}
                 config={{
                   file: {
                     attributes: {
