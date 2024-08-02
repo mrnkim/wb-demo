@@ -1,4 +1,5 @@
 import React, { useEffect, useState, Suspense } from "react";
+import clsx from "clsx";
 import ReactPlayer from "react-player";
 import { useInView } from "react-intersection-observer";
 import PageNav from "./PageNav";
@@ -48,14 +49,17 @@ const Videos = () => {
     : "";
 
   return (
-    <div>
-          <p>Videos in {indexData?.index_name}</p>
-          <p>
-            {indexData?.video_count} videos ({durationString})
-          </p>
-          <VideoList videos={videosData?.data} page={page} />
-          <PageNav videosData={videosData} page={page} setPage={setPage} />
-
+    <div className={clsx("flex-1", "flex", "flex-col", "gap-y-3")}>
+      <div className={clsx("flex", "items-center", "whitespace-nowrap")}>
+        <p className={clsx("text-white", "text-subtitle1", "mr-2")}>
+          Videos in {indexData?.index_name}
+        </p>
+      </div>
+      <p>
+        {indexData?.video_count} videos ({durationString})
+      </p>
+      <VideoList videos={videosData?.data} page={page} />
+      <PageNav videosData={videosData} page={page} setPage={setPage} />
     </div>
   );
 };

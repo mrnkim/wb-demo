@@ -19,35 +19,35 @@ export default function Home() {
     setImgName("");
   };
 
-
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <SearchBar
-        imgQuerySrc={imgQuerySrc}
-        setImgQuerySrc={setImgQuerySrc}
-        setUploadedImg={setUploadedImg}
-        searchResultData={searchResultData}
-        setSearchResultData={setSearchResultData}
-        updatedSearchData={updatedSearchData}
-        setUpdatedSearchData={setUpdatedSearchData}
-        imgName={imgName}
-        setImgName={setImgName}
-        clearImageQuery={clearImageQuery}
-        uploadedImg={uploadedImg}
-      />
-      {!uploadedImg && <Videos/>}
-      {searchResultData && (
-        <SearchResults
+      <div className="w-full max-w-4xl">
+        <SearchBar
           imgQuerySrc={imgQuerySrc}
-          uploadedImg={uploadedImg}
+          setImgQuerySrc={setImgQuerySrc}
+          setUploadedImg={setUploadedImg}
           searchResultData={searchResultData}
           setSearchResultData={setSearchResultData}
           updatedSearchData={updatedSearchData}
           setUpdatedSearchData={setUpdatedSearchData}
           imgName={imgName}
+          setImgName={setImgName}
+          clearImageQuery={clearImageQuery}
+          uploadedImg={uploadedImg}
         />
-      )}
+        {!imgQuerySrc && <Videos />}
+        {searchResultData && (
+          <SearchResults
+            imgQuerySrc={imgQuerySrc}
+            uploadedImg={uploadedImg}
+            searchResultData={searchResultData}
+            setSearchResultData={setSearchResultData}
+            updatedSearchData={updatedSearchData}
+            setUpdatedSearchData={setUpdatedSearchData}
+            imgName={imgName}
+          />
+        )}
+      </div>
     </main>
   );
 }
