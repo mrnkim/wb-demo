@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, Suspense } from "react";
+import clsx from "clsx";
 import SearchResultList from "./SearchResultList";
 import LoadingSpinner from "./LoadingSpinner";
 import { ErrorBoundary } from "react-error-boundary";
@@ -25,17 +26,32 @@ const SearchResults = ({
         <div>
           {searchResultData?.pageInfo?.total_results > 0 ? (
             <>
-              <p>
-                Search result {updatedSearchData?.pageInfo?.totalVideos}
-                {updatedSearchData?.pageInfo?.totalVideos > 1
-                  ? " videos"
-                  : " video"}
-                , {updatedSearchData?.pageInfo?.total_results}{" "}
-                {updatedSearchData?.pageInfo?.total_results > 1
-                  ? " matches"
-                  : " match"}
-                ,{" "}
-              </p>
+              <div className={clsx("flex", "items-center", "mt-5", "mb-5")}>
+                <p className="text-subtitle2 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+                  Search results {updatedSearchData?.pageInfo?.totalVideos}
+                </p>
+                {/* <img src={"/Ellipse.sgv"} className="m-3" /> */}
+                <p
+                  className={clsx(
+                    "text-grey-600",
+                    "my-0 text-body2",
+                    "whitespace-nowrap",
+                    "ml-1.5"
+                  )}
+                >
+                  <span> • </span>
+                  {/* {updatedSearchData?.pageInfo?.totalVideos > 1
+                    ? " videos"
+                    : " video"}
+                  , */}
+                  {updatedSearchData?.pageInfo?.total_results}{"  "}
+                  {updatedSearchData?.pageInfo?.total_results > 1
+                    ? " matches"
+                    : " match"}
+                  {" "}
+                </p>
+              </div>
+
               <SearchResultList
                 searchResultData={searchResultData}
                 updatedSearchData={updatedSearchData}

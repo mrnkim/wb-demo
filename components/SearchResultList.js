@@ -205,8 +205,8 @@ const SearchResultList = ({
                     <div
                       className={clsx(
                         "px-1",
-                        "py-1.5",
-                        "rounded-lg",
+                        "py-1",
+                        "rounded",
                         clip.confidence === "high"
                           ? "bg-turquoise-600"
                           : clip.confidence === "medium"
