@@ -59,7 +59,9 @@ const Videos = () => {
         {indexData?.video_count} videos ({durationString})
       </p>
       <VideoList videos={videosData?.data} page={page} />
+      <div className={clsx('w-full', 'flex', 'justify-center', 'mt-8')}>
       <PageNav videosData={videosData} page={page} setPage={setPage} />
+      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import clsx from "clsx";
 
 function PageNav({ page, setPage, videosData }) {
   const totalPages = videosData?.page_info?.total_page || 1;
@@ -59,31 +60,55 @@ function PageNav({ page, setPage, videosData }) {
   };
 
   return (
-    <nav className="pageNav">
+    <nav
+      className={clsx(
+        "pageNav",
+        "flex",
+        "items-center",
+        "px-1.5",
+        "gap-x-[1.5rem]"
+      )}
+    >
       {page === 1 ? (
-        <button disabled className="disabled-button">
+        <button
+          disabled
+          className="text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none"
+        >
           <img src={"/ChevronLeftDisabled.svg"} alt="prev Icon disabled" />
         </button>
       ) : (
-        <button onClick={previousPage}>
+        <button
+          onClick={previousPage}
+          className="text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none hover:border hover:border-[#D4D5D2]"
+        >
           <img src={"/ChevronLeft.svg"} alt="prev Icon" />
         </button>
       )}
       {pagesArray.map((pg) => (
         <button
           key={pg}
-          className={page === pg ? "active" : ""}
+          className={clsx(
+            "text-xs text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none",
+            pg === page && "bg-[#D4D5D2] font-medium"
+          )}
+          disabled={pg === "..."}
           onClick={() => handlePageClick(pg)}
         >
           {pg}
         </button>
       ))}
       {page === totalPages ? (
-        <button disabled className="disabled-button">
+        <button
+          disabled
+          className="text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none"
+        >
           <img src={"/ChevronRightDisabled.svg"} alt="next Icon disabled" />
         </button>
       ) : (
-        <button onClick={nextPage}>
+        <button
+          onClick={nextPage}
+          className="text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none hover:border hover:border-[#D4D5D2]"
+        >
           <img src={"/ChevronRight.svg"} alt="next Icon" />
         </button>
       )}

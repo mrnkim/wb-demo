@@ -14,7 +14,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page") || 1;
 
-  const url = `https://api.twelvelabs.io/tl/playground/samples/v1.2/indexes/${indexId}/videos?page_limit=12&page=${page}`;
+  const url = `https://api.twelvelabs.io/tl/playground/samples/v1.2/indexes/${indexId}/videos?page_limit=9&page=${page}`;
 
   const options = {
     method: "GET",
