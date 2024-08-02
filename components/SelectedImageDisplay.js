@@ -253,10 +253,13 @@ const SelectedImageDisplay = ({
         )}
         role="button"
         tabIndex={0}
+        onMouseEnter={openPopover}
+        onMouseLeave={closePopover}
         onClick={openDisplayModal}
       >
         <img
           className={clsx(
+            "h-9",
             "object-contain",
             "border-r-[1px] border-grey-200",
             "flex-shrink-0"
@@ -264,7 +267,7 @@ const SelectedImageDisplay = ({
           src={imageSrc}
           alt="user-uploaded"
         />
-        <span
+        <p
           className={clsx(
             "mx-[9px]",
             "text-subtitle2 text-grey-700",
@@ -272,7 +275,7 @@ const SelectedImageDisplay = ({
           )}
         >
           {imgName}
-        </span>
+        </p>
         <IconButton size="small" onClick={onCloseIconClick}>
           <CloseIcon className="text-grey-500" fontSize="small" />
         </IconButton>
@@ -320,7 +323,7 @@ const SelectedImageDisplay = ({
         open={isModalOpen}
         onClose={closeDisplayModal}
       >
-        <DialogTitle className="w-[calc(100%-30px)] truncate tablet:pb-3">
+        <DialogTitle className="w-[calc(100%-30px)] truncate">
           {imgName}
           <IconButton
             className="absolute right-3 top-3"
@@ -351,10 +354,13 @@ const SelectedImageDisplay = ({
               />
             </ReactCrop>
           </div>
-          <div
-            className={clsx("border-grey-200 bg-grey-50", "flex justify-end")}
-          >
-            <IconButton onClick={onCropSearchClick}>Search</IconButton>
+          <div className={clsx("flex justify-end mt-3")}>
+            <button
+              className="px-4 py-3 bg-green-500 text-body2"
+              onClick={onCropSearchClick}
+            >
+              Search
+            </button>
           </div>
         </DialogContent>
       </Dialog>

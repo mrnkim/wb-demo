@@ -59,10 +59,12 @@ export async function GET(req) {
         ...formDataHeaders,
         accept: "application/json",
         "x-api-key": apiKey,
+        "Content-Type": "multipart/form-data",
       },
     });
 
     const imageResult = response.data;
+    console.log("🚀 > GET > imageResult=", imageResult);
 
     if (!imageResult || !imageResult.data) {
       return NextResponse.json(

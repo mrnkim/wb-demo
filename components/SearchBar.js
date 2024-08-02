@@ -100,7 +100,6 @@ const SearchBar = ({
           </div>
         </div>
         {imgQuerySrc && (
-          <div className="w-8 h-14 flex items-center gap-1 ml-1">
             <SelectedImageDisplay
               imgQuerySrc={imgQuerySrc}
               setImgQuerySrc={setImgQuerySrc}
@@ -114,7 +113,6 @@ const SearchBar = ({
               setUpdatedSearchData={setUpdatedSearchData}
               searchImage={searchImage}
             />
-          </div>
         )}
         {!imgQuerySrc && (
           <div className="text-[#c5c7c3] text-xl leading-loose ml-2">

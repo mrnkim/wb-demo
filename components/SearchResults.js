@@ -5,6 +5,7 @@ import SearchResultList from "./SearchResultList";
 import LoadingSpinner from "./LoadingSpinner";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./ErrorFallback";
+import EmptyBasicIcon from "./EmptyBasicIcon";
 
 const SearchResults = ({
   imgQuerySrc,
@@ -44,11 +45,11 @@ const SearchResults = ({
                     ? " videos"
                     : " video"}
                   , */}
-                  {updatedSearchData?.pageInfo?.total_results}{"  "}
+                  {updatedSearchData?.pageInfo?.total_results}
+                  {"  "}
                   {updatedSearchData?.pageInfo?.total_results > 1
                     ? " matches"
-                    : " match"}
-                  {" "}
+                    : " match"}{" "}
                 </p>
               </div>
 
@@ -60,8 +61,23 @@ const SearchResults = ({
               />
             </>
           ) : (
-            <div className="flex justify-center items-center h-full">
-              <p>We couldn't find any results for your query. 😿</p>
+            <div className="min-h-[50vh] flex justify-center items-center h-full">
+              <div
+                className={clsx(
+                  "h-full w-full",
+                  "flex flex-col items-center justify-center"
+                )}
+              >
+                  <EmptyBasicIcon />
+                <div
+                  className={clsx(
+                    "mt-2",
+                    "text-center font-aeonik text-body2 font-normal text-grey-900"
+                  )}
+                >
+                  <p>We couldn't find any results for your query 😿</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
