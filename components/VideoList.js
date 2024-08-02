@@ -120,7 +120,7 @@ const VideoList = ({ videos, page }) => {
               </div>
             </div>
             <div className="text-center mb-2">
-              <p className={clsx("mt-2", "text-body3", "truncate")}>
+              <p className={clsx("mt-2", "text-body3", "truncate", "grey-700")}>
                 {video.metadata.filename}
               </p>
             </div>

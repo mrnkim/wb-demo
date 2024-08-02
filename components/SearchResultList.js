@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import clsx from "clsx";
 import ReactPlayer from "react-player";
 import { useInView } from "react-intersection-observer";
 import LoadingSpinner from "./LoadingSpinner";
@@ -147,24 +148,21 @@ const SearchResultList = ({
   return (
     <div className="flex flex-wrap -mx-2">
       {updatedSearchData?.searchData?.map((clip, index) => (
-        <div key={index} className="w-full md:w-1/3 px-2 mb-4">
-          <div className="p-2">
-            <div className="text-center mb-2">
-              <span className="text-gray-700">
-                {clip.confidence}
-                {Math.floor(clip.start)}, {Math.floor(clip.end)}
-              </span>
-            </div>
+        <div
+          key={clip?.video_id + "-" + index}
+          className="w-full md:w-1/3 px-2 mb-2"
+        >
+          <div className="relative p-1">
             {clip.videoDetail?.hls?.video_url && (
               <>
                 <div
+                  className="w-full h-40 relative overflow-hidden rounded cursor-pointer"
                   onClick={() => {
                     setClickedThumbnailIndex(index);
                     if (playingIndex !== index) {
                       setPlayingIndex(index);
                     }
                   }}
-                  style={{ cursor: "pointer" }}
                 >
                   <ReactPlayer
                     ref={(el) => (playerRefs.current[index] = el)}
@@ -196,9 +194,38 @@ const SearchResultList = ({
                   />
                 </div>
                 <div className="text-center mb-2">
-                  <span className="text-gray-700">
-                    {clip.videoDetail.metadata.video_title}
-                  </span>
+                  <div
+                    className={clsx(
+                      "absolute",
+                      "top-3",
+                      "transform",
+                    )}
+                    style={{ left: "5%" }}
+                  >
+                    <div
+                      className={clsx(
+                        "px-1",
+                        "py-1.5",
+                        "rounded-lg",
+                        clip.confidence === "high"
+                          ? "bg-turquoise-600"
+                          : clip.confidence === "medium"
+                          ? "bg-yellow-600"
+                          : clip.confidence === "low"
+                          ? "bg-red-600"
+                          : "bg-gray-300"
+                      )}
+                    >
+                      <p className="text-body3 font-bold text-white capitalize">
+                        {clip.confidence}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-center mb-2">
+                <p className={clsx("mt-2", "text-body3", "truncate", "grey-700")}>
+                {clip.videoDetail.metadata.video_title}
+                  </p>
                 </div>
               </>
             )}
