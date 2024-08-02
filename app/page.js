@@ -35,7 +35,7 @@ export default function Home() {
           clearImageQuery={clearImageQuery}
           uploadedImg={uploadedImg}
         />
-        {!imgQuerySrc && <Videos />}
+        {!searchResultData && <Videos />}
         {searchResultData && (
           <SearchResults
             imgQuerySrc={imgQuerySrc}

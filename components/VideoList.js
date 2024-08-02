@@ -67,9 +67,9 @@ const VideoList = ({ videos, page }) => {
       {updatedVideos?.map((video, index) => (
         <div
           key={video._id + "-" + index}
-          className="w-full md:w-1/3 px-2 mb-4"
+          className="w-full md:w-1/3 px-2 mb-2"
         >
-          <div className="relative p-2">
+          <div className="relative p-1">
             <div
               className="w-full h-40 relative overflow-hidden rounded cursor-pointer"
               onClick={() => handleThumbnailClick(video._id)}
@@ -99,7 +99,7 @@ const VideoList = ({ videos, page }) => {
               <div
                 className={clsx(
                   "absolute",
-                  "top-5",
+                  "top-3",
                   "left-1/2",
                   "transform",
                   "-translate-x-1/2"

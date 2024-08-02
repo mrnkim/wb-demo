@@ -50,17 +50,30 @@ const Videos = () => {
 
   return (
     <div className={clsx("flex-1", "flex", "flex-col", "gap-y-3")}>
-      <div className={clsx("flex", "items-center", "whitespace-nowrap")}>
-        <p className={clsx("text-white", "text-subtitle1", "mr-2")}>
-          Videos in {indexData?.index_name}
-        </p>
-      </div>
-      <p>
-        {indexData?.video_count} videos ({durationString})
-      </p>
+      {indexData && (
+        <div className={clsx("flex", "items-center", "mt-5")}>
+          <p className="text-subtitle2 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+            Videos in {indexData?.index_name}
+          </p>
+        </div>
+      )}
+      {indexData && indexData.video_count && (
+        <div className={clsx("flex items-center gap-x-2")}>
+          <img src={"/VideoLibrary.svg"} />
+          <p
+            className={clsx(
+              "text-grey-700",
+              "my-0 text-body2",
+              "whitespace-nowrap"
+            )}
+          >
+            {indexData?.video_count} videos ({durationString})
+          </p>
+        </div>
+      )}
       <VideoList videos={videosData?.data} page={page} />
-      <div className={clsx('w-full', 'flex', 'justify-center', 'mt-8')}>
-      <PageNav videosData={videosData} page={page} setPage={setPage} />
+      <div className={clsx("w-full", "flex", "justify-center", "mt-8")}>
+        <PageNav videosData={videosData} page={page} setPage={setPage} />
       </div>
     </div>
   );
