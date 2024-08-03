@@ -1,30 +1,24 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import clsx from "clsx";
 
-function PageNav({ page, setPage, videosData, setVideoLoading }) {
-  const totalPages = videosData?.page_info?.total_page || 1;
-  const maxPagesToShow = 5; // Adjust this to control how many pages to show
+const PageNav = ({ page, setPage, totalPage }) => {
+  const maxPagesToShow = 5;
   const pageRange = Math.floor(maxPagesToShow / 2);
 
-  const getPagesArray = () => {
+  const pagesArray = useMemo(() => {
     let pages = [];
-
-    // Calculate start and end page based on current page
     let startPage = Math.max(1, page - pageRange);
-    let endPage = Math.min(totalPages, page + pageRange);
+    let endPage = Math.min(totalPage, page + pageRange);
 
-    if (totalPages <= maxPagesToShow) {
-      // If total pages are less than or equal to max pages to show, display all pages
-      pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+    if (totalPage <= maxPagesToShow) {
+      pages = Array.from({ length: totalPage }, (_, index) => index + 1);
     } else {
-      // Add the first page and ellipsis if needed
       if (startPage > 2) {
         pages.push(1, "...");
       } else {
         startPage = 1;
       }
 
-      // Add pages from startPage to endPage
       pages.push(
         ...Array.from(
           { length: endPage - startPage + 1 },
@@ -32,33 +26,28 @@ function PageNav({ page, setPage, videosData, setVideoLoading }) {
         )
       );
 
-      // Add ellipsis and the last page if needed
-      if (endPage < totalPages - 1) {
-        pages.push("...", totalPages);
-      } else {
-        endPage = totalPages;
+      if (endPage < totalPage - 1) {
+        pages.push("...", totalPage);
       }
     }
 
     return pages;
-  };
+  }, [page, totalPage, pageRange, maxPagesToShow]);
 
-  const pagesArray = getPagesArray();
-
-  const handlePageClick = (pg) => {
-    setVideoLoading(true);
-    if (pg !== "...") {
-      setPage(pg);
-    }
-  };
+  const handlePageClick = useCallback(
+    (pg) => {
+      if (pg !== "...") {
+        setPage(pg);
+      }
+    },
+    [setPage]
+  );
 
   const nextPage = () => {
-    setVideoLoading(true);
-    if (page < totalPages) setPage(page + 1);
+    if (page < totalPage) setPage(page + 1);
   };
 
   const previousPage = () => {
-    setVideoLoading(true);
     if (page > 1) setPage(page - 1);
   };
 
@@ -72,21 +61,19 @@ function PageNav({ page, setPage, videosData, setVideoLoading }) {
         "gap-x-[1.5rem]"
       )}
     >
-      {page === 1 ? (
-        <button
-          disabled
-          className="text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none"
-        >
-          <img src={"/ChevronLeftDisabled.svg"} alt="prev Icon disabled" />
-        </button>
-      ) : (
-        <button
-          onClick={previousPage}
-          className="text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none hover:border hover:border-[#D4D5D2]"
-        >
-          <img src={"/ChevronLeft.svg"} alt="prev Icon" />
-        </button>
-      )}
+      <button
+        onClick={previousPage}
+        disabled={page === 1}
+        className={clsx(
+          "text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none",
+          page === 1 && "cursor-not-allowed"
+        )}
+      >
+        <img
+          src={page === 1 ? "/ChevronLeftDisabled.svg" : "/ChevronLeft.svg"}
+          alt="Previous"
+        />
+      </button>
       {pagesArray.map((pg) => (
         <button
           key={pg}
@@ -100,23 +87,25 @@ function PageNav({ page, setPage, videosData, setVideoLoading }) {
           {pg}
         </button>
       ))}
-      {page === totalPages ? (
-        <button
-          disabled
-          className="text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none"
-        >
-          <img src={"/ChevronRightDisabled.svg"} alt="next Icon disabled" />
-        </button>
-      ) : (
-        <button
-          onClick={nextPage}
-          className="text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none hover:border hover:border-[#D4D5D2]"
-        >
-          <img src={"/ChevronRight.svg"} alt="next Icon" />
-        </button>
-      )}
+      <button
+        onClick={nextPage}
+        disabled={page === totalPage}
+        className={clsx(
+          "text-black bg-transparent outline-none flex-shrink-0 w-[1.5rem] h-[1.5rem] rounded-full transition-colors duration-300 m-[0.38rem] border-none",
+          page === totalPage && "cursor-not-allowed"
+        )}
+      >
+        <img
+          src={
+            page === totalPage
+              ? "/ChevronRightDisabled.svg"
+              : "/ChevronRight.svg"
+          }
+          alt="Next"
+        />
+      </button>
     </nav>
   );
-}
+};
 
 export default PageNav;

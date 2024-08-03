@@ -5,7 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./ErrorFallback";
 import LoadingSpinner from "./LoadingSpinner";
 
-const VideoList = ({ videos, page, videoLoading, setVideoLoading, setVideoError }) => {
+const VideoList = ({ videos, page}) => {
   const [updatedVideos, setUpdatedVideos] = useState(null);
   const [playingVideoId, setPlayingVideoId] = useState(null);
 
@@ -22,11 +22,8 @@ const VideoList = ({ videos, page, videoLoading, setVideoLoading, setVideoError 
         })
       );
       setUpdatedVideos(updatedVideos);
-      setVideoLoading(false);
     } catch (error) {
       console.error("Failed to fetch video details:", error);
-      setVideoError(error);
-      setVideoLoading(false);
     }
   };
 
@@ -51,16 +48,6 @@ const VideoList = ({ videos, page, videoLoading, setVideoLoading, setVideoError 
       fetchVideoDetails();
     }
   }, [videos, page]);
-
-  if (videoLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <LoadingSpinner size="lg" color="primary" />
-      </div>
-    );
-  }
-
-
 
   return (
     <div className="flex flex-wrap -mx-2">

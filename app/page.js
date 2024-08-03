@@ -8,15 +8,11 @@ import ErrorFallback from "../components/ErrorFallback";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 
-
 export default function Home() {
   const [imgQuerySrc, setImgQuerySrc] = useState("");
   const [uploadedImg, setUploadedImg] = useState("");
-  console.log("🚀 > Home > uploadedImg=", uploadedImg)
-  // const [searchResultData, setSearchResultData] = useState(null);
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
   const [imgName, setImgName] = useState("");
-  // const [searchResultsLoading, setSearchResultsLoading] = useState(false);
   const [newSearchStarted, setNewSearchStarted] = useState(false);
   const [videoError, setVideoError] = useState(null);
 
@@ -24,7 +20,6 @@ export default function Home() {
 
   //TODO: Merge with uploadImage in SelectedImageDisplay.js
   const onImageSelected = async (src) => {
-
     if (typeof src === "string") {
       // src is an image URL; download and upload the image
       try {
@@ -75,25 +70,6 @@ export default function Home() {
     }
   };
 
-  // const searchImage = async (imagePath) => {
-  //   setSearchResultsLoading(true);
-  //   try {
-  //     const response = await fetch(
-  //       `/api/search?query=${encodeURIComponent(imagePath)}`
-  //     );
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-  //     const result = await response.json();
-  //     setSearchResultData(result);
-  //   } catch (error) {
-  //     console.error(error);
-  //   } finally {
-  //     setSearchResultsLoading(false);
-  //     setNewSearchStarted(false);
-  //   }
-  // };
-
   const fetchSearchResults = async (imagePath) => {
     const response = await fetch(
       `/api/search?query=${encodeURIComponent(imagePath)}`
@@ -122,18 +98,9 @@ export default function Home() {
     enabled: !!uploadedImg, // Only run the query if uploadedImg is not empty
   });
 
-  console.log("🚀 > Home > searchResultData=", searchResultData);
-  console.log("🚀 > Home > searchResultsLoading=", searchResultsLoading);
-
-  // useEffect(() => {
-  //   if (!uploadedImg) return;
-  //   searchImage(uploadedImg);
-  // }, [uploadedImg]);
-
   const clearImageQuery = async () => {
     setImgQuerySrc("");
     setUploadedImg("");
-    setSearchResultData("");
     setUpdatedSearchData("");
     setImgName("");
   };
@@ -147,7 +114,6 @@ export default function Home() {
       queryKey: ["search", uploadedImg],
     });
   }, [uploadedImg]);
-
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
