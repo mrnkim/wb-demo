@@ -11,10 +11,10 @@ const SearchResults = ({
   imgQuerySrc,
   uploadedImg,
   searchResultData,
-  setSearchResultData,
+  // setSearchResultData,
   updatedSearchData,
   setUpdatedSearchData,
-  searchImage,
+  // searchImage,
   imgName,
   searchResultsLoading,
 }) => {

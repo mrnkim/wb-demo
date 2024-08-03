@@ -45,12 +45,11 @@ const SelectedImageDisplay = ({
   unselectImage,
   setUploadedImg,
   searchResultData,
-  setSearchResultData,
+  // setSearchResultData,
   updatedSearchData,
   setUpdatedSearchData,
-  searchImage,
-  setSearchResultsLoading,
-  setNewSearchStarted
+  // setSearchResultsLoading,
+  setNewSearchStarted,
 }) => {
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
@@ -182,14 +181,7 @@ const SelectedImageDisplay = ({
       }
 
       const { downloadUrl } = await response.json();
-      const newUrlParts = downloadUrl.split("/");
-      const filename = newUrlParts[newUrlParts.length - 1];
-
-      setImgQuerySrc(downloadUrl);
-      setUploadedImg(downloadUrl);
-      setImgName(filename);
-
-      return filename;
+      return downloadUrl;
     } else {
       // If the image source is a Data URL, upload via the upload route
       const blob = dataURLToBlob(src);
@@ -208,43 +200,40 @@ const SelectedImageDisplay = ({
       }
 
       const { url } = await response.json();
-      const urlParts = url.split("/");
-      const filename = urlParts[urlParts.length - 1];
-
-      setImgQuerySrc(url);
-      setUploadedImg(url);
-      setImgName(filename);
-
-      return filename;
+      return url; // Return the URL
     }
   };
 
   const onCropSearchClick = async () => {
-    setNewSearchStarted(true);
     if (completedCrop && imgRef.current) {
       try {
         const croppedImage = await getCroppedImage(
           imgRef.current,
           completedCrop
         );
-        const uploadResponse = await uploadImage(
-          croppedImage,
-          typeof imgQuerySrc === "string"
-        );
-        await searchImage(uploadResponse);
-        closeDisplayModal();
+
+        if (croppedImage) {
+          const uploadResponse = await uploadImage(
+            croppedImage,
+            typeof imgQuerySrc === "string"
+          );
+
+          if (uploadResponse) {
+            setImgQuerySrc(uploadResponse);
+            setUploadedImg(uploadResponse);
+            setImgName(uploadResponse.split("/").pop());
+            closeDisplayModal();
+          }
+        } else {
+          console.warn("No cropped image returned from getCroppedImage");
+        }
       } catch (error) {
         console.error("Error processing image:", error);
       }
     } else {
       console.warn("No completed crop or imgRef.current is null");
-      setNewSearchStarted(false); // End loading
     }
   };
-
-
-  // if (isLoading) return <div>Loading...</div>;
-  // if (error) return <div>Error: {error}</div>;
 
   return (
     <>

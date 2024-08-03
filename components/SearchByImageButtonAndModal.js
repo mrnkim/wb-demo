@@ -34,7 +34,7 @@ const getErrorMessage = (code) => {
 
 const SearchByImageButtonAndModal = ({
   onImageSelected,
-  searchImage,
+  // searchImage,
   setImgQuerySrc,
   setImgName,
 }) => {
