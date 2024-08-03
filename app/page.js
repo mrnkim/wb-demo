@@ -20,6 +20,83 @@ export default function Home() {
   console.log("🚀 > Home > newSearchStarted=", newSearchStarted);
   console.log("🚀 > Home > searchResultsLoading=", searchResultsLoading);
 
+  //TODO: Merge with uploadImage in SelectedImageDisplay.js
+  const onImageSelected = async (src) => {
+    setSearchResultsLoading(true); // Start loading
+    if (typeof src === "string") {
+      // src is an image URL; download and upload the image
+      try {
+        // Proxy the image request through your server
+        const response = await fetch("/api/uploadByUrl", {
+          method: "POST",
+          body: JSON.stringify({ url: src }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) {
+          console.error("Failed to fetch image through proxy");
+          return;
+        }
+
+        const { downloadUrl } = await response.json(); // Get fileName from response
+        const fileName = downloadUrl.split("/").pop(); // Simple method to get file name
+
+        setImgQuerySrc(downloadUrl);
+        setUploadedImg(downloadUrl);
+        setImgName(fileName);
+      } catch (error) {
+        console.error("Error processing image URL:", error);
+      }
+    } else if (src instanceof File) {
+      try {
+        const formData = new FormData();
+        formData.append("file", src);
+
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          console.error("Failed to upload image");
+          return;
+        }
+
+        const { url } = await response.json();
+        setImgQuerySrc(src);
+        setUploadedImg(url);
+        setImgName(src.name);
+      } catch (error) {
+        console.error("Error processing file upload:", error);
+      }
+    }
+  };
+
+  const searchImage = async (imagePath) => {
+    setSearchResultsLoading(true);
+    try {
+      const response = await fetch(
+        `/api/search?query=${encodeURIComponent(imagePath)}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const result = await response.json();
+      setSearchResultData(result);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setSearchResultsLoading(false);
+      setNewSearchStarted(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!uploadedImg) return;
+    searchImage(uploadedImg);
+  }, [uploadedImg]);
+
   const clearImageQuery = async () => {
     setImgQuerySrc("");
     setUploadedImg("");
@@ -51,6 +128,8 @@ export default function Home() {
           setSearchResultsLoading={setSearchResultsLoading}
           setNewSearchStarted={setNewSearchStarted}
           newSearchStarted={newSearchStarted}
+          onImageSelected={onImageSelected}
+          searchImage={searchImage}
         />
         {newSearchStarted ? (
           <LoadingSpinner />

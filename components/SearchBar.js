@@ -19,83 +19,9 @@ const SearchBar = ({
   setSearchResultsLoading,
   newSearchStarted,
   setNewSearchStarted,
+  onImageSelected,
+  searchImage
 }) => {
-  //TODO: Merge with uploadImage in SelectedImageDisplay.js
-  const onImageSelected = async (src) => {
-    setSearchResultsLoading(true); // Start loading
-    if (typeof src === "string") {
-      // src is an image URL; download and upload the image
-      try {
-        // Proxy the image request through your server
-        const response = await fetch("/api/uploadByUrl", {
-          method: "POST",
-          body: JSON.stringify({ url: src }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!response.ok) {
-          console.error("Failed to fetch image through proxy");
-          return;
-        }
-
-        const { downloadUrl } = await response.json(); // Get fileName from response
-        const fileName = downloadUrl.split("/").pop(); // Simple method to get file name
-
-        setImgQuerySrc(downloadUrl);
-        setUploadedImg(downloadUrl);
-        setImgName(fileName);
-      } catch (error) {
-        console.error("Error processing image URL:", error);
-      }
-    } else if (src instanceof File) {
-      try {
-        const formData = new FormData();
-        formData.append("file", src);
-
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          console.error("Failed to upload image");
-          return;
-        }
-
-        const { url } = await response.json();
-        setImgQuerySrc(src);
-        setUploadedImg(url);
-        setImgName(src.name);
-      } catch (error) {
-        console.error("Error processing file upload:", error);
-      }
-    }
-  };
-
-  const searchImage = async (imagePath) => {
-    setSearchResultsLoading(true);
-    try {
-      const response = await fetch(
-        `/api/search?query=${encodeURIComponent(imagePath)}`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const result = await response.json();
-      setSearchResultData(result);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setSearchResultsLoading(false);
-      setNewSearchStarted(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!uploadedImg) return;
-    searchImage(uploadedImg);
-  }, [uploadedImg]);
 
   return (
     <div className="w-full max-w-4xl h-14 py-3 bg-white border-b-2 border-[#e5e6e4] flex justify-between items-center">
