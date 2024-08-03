@@ -212,8 +212,8 @@ const SearchResultList = ({
                           : clip.confidence === "medium"
                           ? "bg-yellow-600"
                           : clip.confidence === "low"
-                          ? "bg-red-600"
-                          : "bg-gray-300"
+                          ? "bg-grey-600"
+                          : "bg-grey-600"
                       )}
                     >
                       <p className="text-body3 font-bold text-white capitalize">
