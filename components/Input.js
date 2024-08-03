@@ -1,5 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { clsx } from "clsx";
+import clsx from "clsx";
 import React from "react";
 
 const Input = ({
@@ -17,14 +17,16 @@ const Input = ({
   return (
     <div className={clsx("flex flex-col", fullWidth && "w-full")}>
       <div className="relative">
-        <div
-          className={clsx(
-            "absolute bottom-0 left-2 top-0",
-            "flex items-center justify-center"
-          )}
-        >
-          {icon}
-        </div>
+        {icon && (
+          <div
+            className={clsx(
+              "absolute left-2 top-1/2 -translate-y-1/2 flex items-center justify-center",
+              "pointer-events-none" // Ensures icon does not block input interaction
+            )}
+          >
+            {icon}
+          </div>
+        )}
         <input
           {...inputProps}
           className={clsx(
@@ -37,7 +39,8 @@ const Input = ({
             "placeholder:text-grey-500",
             "disabled:bg-grey-200",
             "disabled:border-transparent",
-            error && "!border-red-500"
+            error && "!border-red-500",
+            fullWidth && "w-full" // Ensure full width if specified
           )}
           value={value}
         />
