@@ -49,6 +49,8 @@ const SelectedImageDisplay = ({
   updatedSearchData,
   setUpdatedSearchData,
   searchImage,
+  setSearchResultsLoading,
+  setNewSearchStarted
 }) => {
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
@@ -218,6 +220,7 @@ const SelectedImageDisplay = ({
   };
 
   const onCropSearchClick = async () => {
+    setNewSearchStarted(true);
     if (completedCrop && imgRef.current) {
       try {
         const croppedImage = await getCroppedImage(
@@ -235,8 +238,10 @@ const SelectedImageDisplay = ({
       }
     } else {
       console.warn("No completed crop or imgRef.current is null");
+      setNewSearchStarted(false); // End loading
     }
   };
+
 
   // if (isLoading) return <div>Loading...</div>;
   // if (error) return <div>Error: {error}</div>;

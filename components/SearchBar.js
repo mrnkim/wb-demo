@@ -15,10 +15,14 @@ const SearchBar = ({
   setImgName,
   clearImageQuery,
   uploadedImg,
+  searchResultsLoading,
+  setSearchResultsLoading,
+  newSearchStarted,
+  setNewSearchStarted,
 }) => {
-
   //TODO: Merge with uploadImage in SelectedImageDisplay.js
   const onImageSelected = async (src) => {
+    setSearchResultsLoading(true); // Start loading
     if (typeof src === "string") {
       // src is an image URL; download and upload the image
       try {
@@ -45,29 +49,32 @@ const SearchBar = ({
         console.error("Error processing image URL:", error);
       }
     } else if (src instanceof File) {
-      const formData = new FormData();
-      formData.append("file", src);
+      try {
+        const formData = new FormData();
+        formData.append("file", src);
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
 
-      if (!response.ok) {
-        console.error("Failed to upload image");
-        return;
+        if (!response.ok) {
+          console.error("Failed to upload image");
+          return;
+        }
+
+        const { url } = await response.json();
+        setImgQuerySrc(src);
+        setUploadedImg(url);
+        setImgName(src.name);
+      } catch (error) {
+        console.error("Error processing file upload:", error);
       }
-
-      const { url } = await response.json();
-      setImgQuerySrc(src);
-      setUploadedImg(url);
-      setImgName(src.name);
     }
   };
 
   const searchImage = async (imagePath) => {
-    // setIsLoading(true);
-    // setError(null);
+    setSearchResultsLoading(true);
     try {
       const response = await fetch(
         `/api/search?query=${encodeURIComponent(imagePath)}`
@@ -79,11 +86,10 @@ const SearchBar = ({
       setSearchResultData(result);
     } catch (error) {
       console.error(error);
-      // setError(error.message);
+    } finally {
+      setSearchResultsLoading(false);
+      setNewSearchStarted(false);
     }
-    // finally {
-    //   setIsLoading(false);
-    // }
   };
 
   useEffect(() => {
@@ -100,19 +106,21 @@ const SearchBar = ({
           </div>
         </div>
         {imgQuerySrc && (
-            <SelectedImageDisplay
-              imgQuerySrc={imgQuerySrc}
-              setImgQuerySrc={setImgQuerySrc}
-              imgName={imgName}
-              setImgName={setImgName}
-              unselectImage={clearImageQuery}
-              setUploadedImg={setUploadedImg}
-              searchResultData={searchResultData}
-              setSearchResultData={setSearchResultData}
-              updatedSearchData={updatedSearchData}
-              setUpdatedSearchData={setUpdatedSearchData}
-              searchImage={searchImage}
-            />
+          <SelectedImageDisplay
+            imgQuerySrc={imgQuerySrc}
+            setImgQuerySrc={setImgQuerySrc}
+            imgName={imgName}
+            setImgName={setImgName}
+            unselectImage={clearImageQuery}
+            setUploadedImg={setUploadedImg}
+            searchResultData={searchResultData}
+            setSearchResultData={setSearchResultData}
+            updatedSearchData={updatedSearchData}
+            setUpdatedSearchData={setUpdatedSearchData}
+            searchImage={searchImage}
+            setSearchResultsLoading={setSearchResultsLoading}
+            setNewSearchStarted={setNewSearchStarted}
+          />
         )}
         {!imgQuerySrc && (
           <div className="text-[#c5c7c3] text-xl leading-loose ml-2">
@@ -127,6 +135,7 @@ const SearchBar = ({
           searchImage={searchImage}
           setImgQuerySrc={setImgQuerySrc}
           setImgName={setImgName}
+          setSearchResultsLoading={setSearchResultsLoading}
         />
       </div>
     </div>

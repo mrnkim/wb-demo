@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 
-function PageNav({ page, setPage, videosData }) {
+function PageNav({ page, setPage, videosData, setVideoLoading }) {
   const totalPages = videosData?.page_info?.total_page || 1;
   const maxPagesToShow = 5; // Adjust this to control how many pages to show
   const pageRange = Math.floor(maxPagesToShow / 2);
@@ -46,16 +46,19 @@ function PageNav({ page, setPage, videosData }) {
   const pagesArray = getPagesArray();
 
   const handlePageClick = (pg) => {
+    setVideoLoading(true);
     if (pg !== "...") {
       setPage(pg);
     }
   };
 
   const nextPage = () => {
+    setVideoLoading(true);
     if (page < totalPages) setPage(page + 1);
   };
 
   const previousPage = () => {
+    setVideoLoading(true);
     if (page > 1) setPage(page - 1);
   };
 

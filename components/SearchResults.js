@@ -16,6 +16,7 @@ const SearchResults = ({
   setUpdatedSearchData,
   searchImage,
   imgName,
+  searchResultsLoading,
 }) => {
   useEffect(() => {
     console.log("img updated:", imgName);
@@ -25,7 +26,9 @@ const SearchResults = ({
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Suspense fallback={<LoadingSpinner />}>
         <div>
-          {searchResultData?.pageInfo?.total_results > 0 ? (
+          {searchResultsLoading ? (
+            <LoadingSpinner />
+          ) : searchResultData?.pageInfo?.total_results > 0 ? (
             <>
               <div className={clsx("flex", "items-center", "mt-5", "mb-5")}>
                 <p className="text-subtitle2 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
@@ -41,10 +44,6 @@ const SearchResults = ({
                   )}
                 >
                   <span> • </span>
-                  {/* {updatedSearchData?.pageInfo?.totalVideos > 1
-                    ? " videos"
-                    : " video"}
-                  , */}
                   {updatedSearchData?.pageInfo?.total_results}
                   {"  "}
                   {updatedSearchData?.pageInfo?.total_results > 1
@@ -52,7 +51,6 @@ const SearchResults = ({
                     : " match"}{" "}
                 </p>
               </div>
-
               <SearchResultList
                 searchResultData={searchResultData}
                 updatedSearchData={updatedSearchData}
@@ -68,7 +66,7 @@ const SearchResults = ({
                   "flex flex-col items-center justify-center"
                 )}
               >
-                  <EmptyBasicIcon />
+                <EmptyBasicIcon />
                 <div
                   className={clsx(
                     "mt-2",
