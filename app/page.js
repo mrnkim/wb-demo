@@ -3,14 +3,22 @@ import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import SearchResults from "@/components/SearchResults";
 import Videos from "@/components/Videos";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorFallback from "../components/ErrorFallback";
 
 export default function Home() {
   const [imgQuerySrc, setImgQuerySrc] = useState("");
   const [uploadedImg, setUploadedImg] = useState("");
   const [searchResultData, setSearchResultData] = useState(null);
+  console.log("🚀 > Home > searchResultData=", searchResultData);
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
-  console.log("🚀 > Home > updatedSearchData=", updatedSearchData)
   const [imgName, setImgName] = useState("");
+  const [searchResultsLoading, setSearchResultsLoading] = useState(false);
+  const [newSearchStarted, setNewSearchStarted] = useState(false);
+  const [videoError, setVideoError] = useState(null);
+
+  console.log("🚀 > Home > newSearchStarted=", newSearchStarted);
+  console.log("🚀 > Home > searchResultsLoading=", searchResultsLoading);
 
   const clearImageQuery = async () => {
     setImgQuerySrc("");
@@ -19,6 +27,10 @@ export default function Home() {
     setUpdatedSearchData("");
     setImgName("");
   };
+
+  if (videoError) {
+    return <ErrorFallback error={videoError} />;
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -35,18 +47,33 @@ export default function Home() {
           setImgName={setImgName}
           clearImageQuery={clearImageQuery}
           uploadedImg={uploadedImg}
+          searchResultsLoading={searchResultsLoading}
+          setSearchResultsLoading={setSearchResultsLoading}
+          setNewSearchStarted={setNewSearchStarted}
+          newSearchStarted={newSearchStarted}
         />
-        {!searchResultData && <Videos />}
-        {searchResultData && (
-          <SearchResults
-            imgQuerySrc={imgQuerySrc}
-            uploadedImg={uploadedImg}
-            searchResultData={searchResultData}
-            setSearchResultData={setSearchResultData}
-            updatedSearchData={updatedSearchData}
-            setUpdatedSearchData={setUpdatedSearchData}
-            imgName={imgName}
-          />
+        {newSearchStarted ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            {!searchResultData && !searchResultsLoading && (
+              <Videos videoError={videoError} setVideoError={setVideoError} />
+            )}
+            {searchResultsLoading && <LoadingSpinner />}
+            {searchResultData && !searchResultsLoading && (
+              <SearchResults
+                imgQuerySrc={imgQuerySrc}
+                uploadedImg={uploadedImg}
+                searchResultData={searchResultData}
+                setSearchResultData={setSearchResultData}
+                updatedSearchData={updatedSearchData}
+                setUpdatedSearchData={setUpdatedSearchData}
+                imgName={imgName}
+                searchResultsLoading={searchResultsLoading}
+                setSearchResultsLoading={setSearchResultsLoading}
+              />
+            )}
+          </>
         )}
       </div>
     </main>

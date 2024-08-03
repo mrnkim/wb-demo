@@ -5,10 +5,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./ErrorFallback";
 import LoadingSpinner from "./LoadingSpinner";
 
-const VideoList = ({ videos, page }) => {
+const VideoList = ({ videos, page, videoLoading, setVideoLoading, setVideoError }) => {
   const [updatedVideos, setUpdatedVideos] = useState(null);
-  const [videoLoading, setVideoLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [playingVideoId, setPlayingVideoId] = useState(null);
 
   const fetchVideoDetails = async () => {
@@ -27,7 +25,7 @@ const VideoList = ({ videos, page }) => {
       setVideoLoading(false);
     } catch (error) {
       console.error("Failed to fetch video details:", error);
-      setError(error);
+      setVideoError(error);
       setVideoLoading(false);
     }
   };
@@ -55,12 +53,14 @@ const VideoList = ({ videos, page }) => {
   }, [videos, page]);
 
   if (videoLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <LoadingSpinner size="lg" color="primary" />
+      </div>
+    );
   }
 
-  if (error) {
-    return <ErrorFallback error={error} />;
-  }
+
 
   return (
     <div className="flex flex-wrap -mx-2">
@@ -131,10 +131,4 @@ const VideoList = ({ videos, page }) => {
   );
 };
 
-const VideoListWithErrorBoundary = (props) => (
-  <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <VideoList {...props} />
-  </ErrorBoundary>
-);
-
-export default VideoListWithErrorBoundary;
+export default VideoList;
