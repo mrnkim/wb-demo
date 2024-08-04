@@ -42,10 +42,11 @@ const Videos = ({ videoError, setVideoError }) => {
     data: videosData,
     error: videosError,
     isLoading: isVideosLoading,
+    isFetching,
   } = useQuery({
     queryKey: ["videos", page],
     queryFn: () => fetchVideos(page),
-    keepPreviousData: true, // Keep previous data while loading new data
+    keepPreviousData: true, // Retain previous data while new data is loading
     onError: (error) => {
       console.error("Error fetching videos data:", error);
       setVideoError(error);
@@ -62,7 +63,7 @@ const Videos = ({ videoError, setVideoError }) => {
 
   return (
     <div className={clsx("flex-1", "flex", "flex-col", "gap-y-3")}>
-      {indexData && (
+      {!isIndexLoading && indexData && (
         <>
           <div className={clsx("flex", "items-center", "mt-5")}>
             <p className="text-subtitle2 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
@@ -85,20 +86,24 @@ const Videos = ({ videoError, setVideoError }) => {
           )}
         </>
       )}
-      <VideoList
-        videos={videosData?.data}
-        page={page}
-        setVideoError={setVideoError}
-        isVideosLoading={isVideosLoading}
-      />
-      {totalPage > 1 && (
-        <div className={clsx("w-full", "flex", "justify-center", "mt-8")}>
-          <PageNav
-            page={page}
-            setPage={setPage}
-            totalPage={totalPage} 
-          />
+      {(isVideosLoading && !videosData) || isFetching ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <LoadingSpinner size="lg" color="primary" />
         </div>
+      ) : (
+        <>
+          <VideoList
+            videos={videosData?.data}
+            page={page}
+            setVideoError={setVideoError}
+            isVideosLoading={isVideosLoading}
+          />
+          {totalPage > 1 && (
+            <div className={clsx("w-full", "flex", "justify-center", "mt-8")}>
+              <PageNav page={page} setPage={setPage} totalPage={totalPage} />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
