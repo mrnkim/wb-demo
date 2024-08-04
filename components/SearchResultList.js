@@ -32,12 +32,7 @@ const SearchResultList = ({
       }
 
       const { pageInfo, searchData } = await response.json();
-      if (pageInfo.next_page_token) {
-        setNextPageToken(pageInfo.next_page_token);
-      } else {
-        setNextPageToken(null); // No more pages
-      }
-
+      setNextPageToken(pageInfo.next_page_token || null);
       return { pageInfo, searchData };
     } catch (error) {
       console.error("Error getting next search results", error);
@@ -75,6 +70,7 @@ const SearchResultList = ({
         setNextPageLoading(true);
         setError(null);
         try {
+          // Fetch video details and update search data
           const updatedData = await fetchVideoDetails(
             searchResultData.searchData
           );
@@ -91,7 +87,12 @@ const SearchResultList = ({
       }
     };
 
-    updateSearchData();
+    // Clear old data if new search results are being fetched
+    if (imgName) {
+      setUpdatedSearchData({ searchData: [], pageInfo: {} });
+      setNextPageToken(null);
+      updateSearchData();
+    }
   }, [searchResultData, imgName, setUpdatedSearchData]);
 
   const handleProgress = (state, index, end) => {
@@ -137,7 +138,7 @@ const SearchResultList = ({
     }
   }, [inView, nextPageToken]);
 
-  if (nextPageLoading && !updatedSearchData) {
+  if (nextPageLoading && !updatedSearchData.searchData.length) {
     return <LoadingSpinner />;
   }
 
@@ -147,91 +148,98 @@ const SearchResultList = ({
 
   return (
     <div className="flex flex-wrap -mx-2">
-      {updatedSearchData?.searchData?.map((clip, index) => (
-        <div
-          key={clip?.video_id + "-" + index}
-          className="w-full md:w-1/3 px-2 mb-2"
-        >
-          <div className="relative p-1">
-            {clip.videoDetail?.hls?.video_url && (
-              <>
-                <div
-                  className="w-full h-40 relative overflow-hidden rounded cursor-pointer"
-                  onClick={() => {
-                    setClickedThumbnailIndex(index);
-                    if (playingIndex !== index) {
-                      setPlayingIndex(index);
-                    }
-                  }}
-                >
-                  <ReactPlayer
-                    ref={(el) => (playerRefs.current[index] = el)}
-                    url={clip.videoDetail.hls.video_url}
-                    controls
-                    width="100%"
-                    height="100%"
-                    playing={playingIndex === index}
-                    onPlay={() => handlePlay(index, Math.floor(clip.start))}
-                    onProgress={(state) =>
-                      handleProgress(state, index, Math.floor(clip.end))
-                    }
-                    light={
-                      <img
-                        src={clip.thumbnail_url}
-                        width="100%"
-                        height="100%"
-                        alt="thumbnail"
-                      />
-                    }
-                    config={{
-                      file: {
-                        attributes: {
-                          preload: "auto",
-                        },
-                      },
-                    }}
-                    progressInterval={100}
-                  />
-                </div>
-                <div className="text-center mb-2">
+      {updatedSearchData?.searchData?.length ? (
+        updatedSearchData.searchData.map((clip, index) => (
+          <div
+            key={clip?.video_id + "-" + index}
+            className="w-full md:w-1/3 px-2 mb-2"
+          >
+            <div className="relative p-1">
+              {clip.videoDetail?.hls?.video_url && (
+                <>
                   <div
-                    className={clsx(
-                      "absolute",
-                      "top-3",
-                      "transform",
-                    )}
-                    style={{ left: "5%" }}
+                    className="w-full h-40 relative overflow-hidden rounded cursor-pointer"
+                    onClick={() => {
+                      setClickedThumbnailIndex(index);
+                      if (playingIndex !== index) {
+                        setPlayingIndex(index);
+                      }
+                    }}
                   >
+                    <ReactPlayer
+                      ref={(el) => (playerRefs.current[index] = el)}
+                      url={clip.videoDetail.hls.video_url}
+                      controls
+                      width="100%"
+                      height="100%"
+                      playing={playingIndex === index}
+                      onPlay={() => handlePlay(index, Math.floor(clip.start))}
+                      onProgress={(state) =>
+                        handleProgress(state, index, Math.floor(clip.end))
+                      }
+                      light={
+                        <img
+                          src={clip.thumbnail_url}
+                          width="100%"
+                          height="100%"
+                          alt="thumbnail"
+                        />
+                      }
+                      config={{
+                        file: {
+                          attributes: {
+                            preload: "auto",
+                          },
+                        },
+                      }}
+                      progressInterval={100}
+                    />
+                  </div>
+                  <div className="text-center mb-2">
                     <div
-                      className={clsx(
-                        "px-1",
-                        "py-1",
-                        "rounded",
-                        clip.confidence === "high"
-                          ? "bg-turquoise-600"
-                          : clip.confidence === "medium"
-                          ? "bg-yellow-600"
-                          : clip.confidence === "low"
-                          ? "bg-grey-600"
-                          : "bg-grey-600"
-                      )}
+                      className={clsx("absolute", "top-3", "transform")}
+                      style={{ left: "5%" }}
                     >
-                      <p className="text-body3 font-bold text-white capitalize">
-                        {clip.confidence}
-                      </p>
+                      <div
+                        className={clsx(
+                          "px-1",
+                          "py-1",
+                          "rounded",
+                          clip.confidence === "high"
+                            ? "bg-turquoise-600"
+                            : clip.confidence === "medium"
+                            ? "bg-yellow-600"
+                            : clip.confidence === "low"
+                            ? "bg-grey-600"
+                            : "bg-grey-600"
+                        )}
+                      >
+                        <p className="text-body3 font-bold text-white capitalize">
+                          {clip.confidence}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="text-center mb-2">
-                <p className={clsx("mt-2", "text-body3", "truncate", "grey-700")}>
-                {clip.videoDetail.metadata.video_title}
-                  </p>
-                </div>
-              </>
-            )}
+                  <div className="text-center mb-2">
+                    <p
+                      className={clsx(
+                        "mt-2",
+                        "text-body3",
+                        "truncate",
+                        "grey-700"
+                      )}
+                    >
+                      {clip.videoDetail.metadata.video_title}
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      ) : !nextPageLoading ? (
+        <p className="w-full text-center">No results found</p>
+      ) : null}
 
       <div ref={observerRef} className="w-full text-center py-4">
         {nextPageToken && <LoadingSpinner />}
