@@ -139,7 +139,11 @@ const SearchResultList = ({
   }, [inView, nextPageToken]);
 
   if (nextPageLoading && !updatedSearchData.searchData.length) {
-    return <LoadingSpinner />;
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+        <LoadingSpinner size="lg" color="primary" />
+      </div>
+    );
   }
 
   if (error) {
@@ -242,7 +246,11 @@ const SearchResultList = ({
       ) : null}
 
       <div ref={observerRef} className="w-full text-center py-4">
-        {nextPageToken && <LoadingSpinner />}
+        {nextPageToken && (
+          <div className="flex justify-center items-center w-full">
+            <LoadingSpinner size="sm" color="default" />
+          </div>
+        )}
       </div>
     </div>
   );

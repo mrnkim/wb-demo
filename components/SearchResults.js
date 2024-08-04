@@ -24,17 +24,17 @@ const SearchResults = ({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <Suspense fallback={<LoadingSpinner />}>
         <div>
           {searchResultsLoading ? (
-            <LoadingSpinner />
+           <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+           <LoadingSpinner size="lg" color="primary" />
+         </div>
           ) : searchResultData?.pageInfo?.total_results > 0 ? (
             <>
               <div className={clsx("flex", "items-center", "mt-5", "mb-5")}>
                 <p className="text-subtitle2 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
                   Search results {updatedSearchData?.pageInfo?.totalVideos}
                 </p>
-                {/* <img src={"/Ellipse.sgv"} className="m-3" /> */}
                 <p
                   className={clsx(
                     "text-grey-600",
@@ -79,7 +79,6 @@ const SearchResults = ({
             </div>
           )}
         </div>
-      </Suspense>
     </ErrorBoundary>
   );
 };
