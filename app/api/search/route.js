@@ -14,7 +14,6 @@ export async function GET(req) {
     );
   }
 
-  // Ensure environment variables are set
   const apiKey = process.env.TWELVELABS_API_KEY;
   const indexId = process.env.TWELVELABS_INDEX_ID;
 
@@ -36,7 +35,6 @@ export async function GET(req) {
     formData.append("index_id", indexId);
     formData.append("query_media_type", "image");
 
-    // Check if the query is a URL or a file path
     if (imgQuerySrc.startsWith("http")) {
       formData.append("query_media_url", imgQuerySrc);
     } else {
@@ -47,13 +45,11 @@ export async function GET(req) {
       formData.append("query_media_file", fs.createReadStream(filePath));
     }
 
-    // Convert FormData to an object that axios can handle
     const formDataHeaders = formData.getHeaders();
 
     const url =
       "https://api.twelvelabs.io/tl/playground/samples/v1.2/search-v2";
 
-    // Make POST request with axios
     const response = await axios.post(url, formData, {
       headers: {
         ...formDataHeaders,
@@ -64,7 +60,6 @@ export async function GET(req) {
     });
 
     const imageResult = response.data;
-    console.log("🚀 > GET > imageResult=", imageResult);
 
     if (!imageResult || !imageResult.data) {
       return NextResponse.json(

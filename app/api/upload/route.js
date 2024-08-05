@@ -13,7 +13,6 @@ export async function POST(req) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const tempDir = path.join(process.cwd(), "tmp");
 
-  // Ensure the temp directory exists
   await fsPromises.mkdir(tempDir, { recursive: true });
 
   const tempFilePath = path.join(tempDir, file.name);

@@ -134,17 +134,15 @@ export default function Home() {
         )}
         {searchResultsLoading && (
           <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
-            <LoadingSpinner size="lg" color="primary" />
+          <LoadingSpinner size="lg" color="primary" />
           </div>
         )}
         {searchResultData && !searchResultsLoading && (
           <SearchResults
-            imgQuerySrc={imgQuerySrc}
-            uploadedImg={uploadedImg}
             searchResultData={searchResultData}
             updatedSearchData={updatedSearchData}
             setUpdatedSearchData={setUpdatedSearchData}
-            imgName={imgName}
+            uploadedImg={uploadedImg}
             searchResultsLoading={searchResultsLoading}
           />
         )}

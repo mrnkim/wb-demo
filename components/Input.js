@@ -40,7 +40,7 @@ const Input = ({
             "disabled:bg-grey-200",
             "disabled:border-transparent",
             error && "!border-red-500",
-            fullWidth && "w-full" // Ensure full width if specified
+            fullWidth && "w-full" 
           )}
           value={value}
         />

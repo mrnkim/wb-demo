@@ -9,7 +9,7 @@ const SearchResultList = ({
   searchResultData,
   updatedSearchData,
   setUpdatedSearchData,
-  imgName,
+  uploadedImg,
 }) => {
   const [nextPageLoading, setNextPageLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,7 +17,6 @@ const SearchResultList = ({
   const [clickedThumbnailIndex, setClickedThumbnailIndex] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
   const playerRefs = useRef([]);
-  const loadingRef = useRef();
 
   const fetchNextSearchResults = async () => {
     setNextPageLoading(true);
@@ -70,7 +69,6 @@ const SearchResultList = ({
         setNextPageLoading(true);
         setError(null);
         try {
-          // Fetch video details and update search data
           const updatedData = await fetchVideoDetails(
             searchResultData.searchData
           );
@@ -87,28 +85,27 @@ const SearchResultList = ({
       }
     };
 
-    // Clear old data if new search results are being fetched
-    if (imgName) {
+    if (uploadedImg) {
       setUpdatedSearchData({ searchData: [], pageInfo: {} });
       setNextPageToken(null);
       updateSearchData();
     }
-  }, [searchResultData, imgName, setUpdatedSearchData]);
+  }, [searchResultData, uploadedImg, setUpdatedSearchData]);
 
   const handleProgress = (state, index, end) => {
     if (state.playedSeconds >= end && index === playingIndex) {
-      setPlayingIndex(null); // Stop playback by setting playingIndex to null
+      setPlayingIndex(null);
     }
   };
 
   const handlePlay = (index, start) => {
     if (playingIndex !== null && playingIndex !== index) {
-      setPlayingIndex(null); // Pause previous player by setting playingIndex to null
+      setPlayingIndex(null);
     }
-    setPlayingIndex(index); // Start playing current player
+    setPlayingIndex(index);
     if (playerRefs.current[index]) {
-      playerRefs.current[index].seekTo(start); // Seek to start time
-      playerRefs.current[index].getInternalPlayer().play(); // Ensure playback starts immediately
+      playerRefs.current[index].seekTo(start);
+      playerRefs.current[index].getInternalPlayer().play();
     }
   };
 

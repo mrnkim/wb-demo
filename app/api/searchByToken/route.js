@@ -12,7 +12,6 @@ export async function GET(req) {
     );
   }
 
-  // Ensure environment variables are set
   const apiKey = process.env.TWELVELABS_API_KEY;
 
   if (!apiKey) {
@@ -22,7 +21,6 @@ export async function GET(req) {
   const url = `https://api.twelvelabs.io/tl/playground/samples/v1.2/search-v2/${pageToken}`;
 
   try {
-    // Make GET request to the Twelve Labs API
     const response = await axios.get(url, {
       headers: {
         accept: "application/json",
@@ -32,7 +30,6 @@ export async function GET(req) {
 
     const searchResults = response.data;
 
-    // Check if searchResults and searchResults.data are defined
     if (!searchResults || !searchResults.data) {
       return NextResponse.json(
         { error: "Unexpected response structure from search query" },

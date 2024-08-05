@@ -5,7 +5,7 @@ import path from "path";
 
 export async function POST(req) {
   try {
-    const { url: imageUrl } = await req.json(); // Parse JSON body
+    const { url: imageUrl } = await req.json(); 
 
     if (!imageUrl) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
@@ -20,17 +20,16 @@ export async function POST(req) {
     }
 
     const arrayBuffer = await response.arrayBuffer();
-    const imageBuffer = Buffer.from(arrayBuffer); // Convert ArrayBuffer to Buffer
-    const fileName = imageUrl.split("/").pop(); // Simple method to get file name
+    const imageBuffer = Buffer.from(arrayBuffer);
+    const fileName = imageUrl.split("/").pop();
 
-    // Save the image to a pre-existing temporary location
     const tempDir = path.join(process.cwd(), "tmp");
     const tempFilePath = path.join(tempDir, fileName);
     await fsPromises.writeFile(tempFilePath, imageBuffer);
 
     return NextResponse.json({ downloadUrl: tempFilePath });
   } catch (error) {
-    console.error("Error processing image URL:", error.message); // Log the error message
+    console.error("Error processing image URL:", error.message);
     return NextResponse.json(
       { error: "Error processing image URL" },
       { status: 500 }

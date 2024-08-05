@@ -4,7 +4,6 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const videoId = searchParams.get("videoId");
 
-  // Ensure environment variables are set
   const apiKey = process.env.TWELVELABS_API_KEY;
   const indexId = process.env.TWELVELABS_INDEX_ID;
 
@@ -14,8 +13,6 @@ export async function GET(req) {
       { status: 500 }
     );
   }
-
-  // const client = new TwelveLabs({ apiKey });
 
   const url = `https://api.twelvelabs.io/tl/playground/samples/v1.2/indexes/${indexId}/videos/${videoId}`;
 
@@ -28,7 +25,6 @@ export async function GET(req) {
   };
 
   try {
-    // let video = await client.index.video.retrieve(indexId, videoId);
     const response = await fetch(url, options);
 
     if (!response.ok) {

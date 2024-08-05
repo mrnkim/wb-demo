@@ -71,13 +71,13 @@ const SearchByImageButtonAndModal = ({
         /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(trimmedUrl) ||
         /f=image|f=auto/.test(trimmedUrl);
       if (!isImage) {
-        setErrorCode("invalid-url"); // Set error code for invalid URL
+        setErrorCode("invalid-url");
         return;
       }
       onImageSelected(trimmedUrl);
       closeModal();
     } catch (e) {
-      setErrorCode("invalid-url"); // Set error code for invalid URL
+      setErrorCode("invalid-url");
     }
   };
 
@@ -182,7 +182,7 @@ const SearchByImageButtonAndModal = ({
           <div className="flex w-full">
             <Input
               className="h-10 border-r-0"
-              fullWidth // Ensure fullWidth is set here
+              fullWidth 
               placeholder="Drop an image link"
               icon={<InsertLink className="text-grey-600" fontSize="small" />}
               value={imageUrlFromInput}

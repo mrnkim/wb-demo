@@ -1,4 +1,3 @@
-// app/api/serve-file/route.js
 import { NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
@@ -16,7 +15,6 @@ export async function GET(req) {
     );
   }
 
-  // Extract the filename from the full file path
   const fileName = path.basename(filePath);
   const resolvedFilePath = path.join(process.cwd(), "tmp", fileName);
 
@@ -28,17 +26,15 @@ export async function GET(req) {
   }
 
   try {
-    // Read the file
     const fileBuffer = fs.readFileSync(resolvedFilePath);
 
     console.log("File read successfully:", resolvedFilePath);
 
-    // Use global encodeURIComponent directly
     const encodedFileName = encodeURIComponent(fileName);
 
     return new NextResponse(fileBuffer, {
       headers: {
-        "Content-Type": "image/jpeg", // Adjust based on file type
+        "Content-Type": "image/jpeg",
         "Content-Disposition": `attachment; filename*=utf-8''${encodedFileName}`,
       },
     });
