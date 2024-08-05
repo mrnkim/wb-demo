@@ -13,17 +13,42 @@ export default function Home() {
   const [uploadedImg, setUploadedImg] = useState("");
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
   const [imgName, setImgName] = useState("");
-  const [newSearchStarted, setNewSearchStarted] = useState(false);
   const [videoError, setVideoError] = useState(null);
 
   const queryClient = useQueryClient();
 
-  //TODO: Merge with uploadImage in SelectedImageDisplay.js
+  const fetchSearchResults = async (imagePath) => {
+    const response = await fetch(
+      `/api/search?query=${encodeURIComponent(imagePath)}`
+    );
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
+  };
+
+  const useSearchQuery = ({ queryKey, enabled }) => {
+    const [key, imagePath] = queryKey;
+    return useQuery({
+      queryKey,
+      queryFn: () => fetchSearchResults(imagePath),
+      enabled,
+    });
+  };
+
+  const {
+    data: searchResultData,
+    error: searchError,
+    isLoading: searchResultsLoading,
+  } = useSearchQuery({
+    queryKey: ["search", uploadedImg],
+    enabled: !!uploadedImg,
+  });
+
+  /** Upload image as a file on image selected */
   const onImageSelected = async (src) => {
     if (typeof src === "string") {
-      // src is an image URL; download and upload the image
       try {
-        // Proxy the image request through your server
         const response = await fetch("/api/uploadByUrl", {
           method: "POST",
           body: JSON.stringify({ url: src }),
@@ -36,8 +61,8 @@ export default function Home() {
           return;
         }
 
-        const { downloadUrl } = await response.json(); // Get fileName from response
-        const fileName = downloadUrl.split("/").pop(); // Simple method to get file name
+        const { downloadUrl } = await response.json();
+        const fileName = downloadUrl.split("/").pop();
 
         setImgQuerySrc(downloadUrl);
         setUploadedImg(downloadUrl);
@@ -70,34 +95,6 @@ export default function Home() {
     }
   };
 
-  const fetchSearchResults = async (imagePath) => {
-    const response = await fetch(
-      `/api/search?query=${encodeURIComponent(imagePath)}`
-    );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return response.json();
-  };
-
-  const useSearchQuery = ({ queryKey, enabled }) => {
-    const [key, imagePath] = queryKey; // Destructure queryKey into `key` and `imagePath`
-    return useQuery({
-      queryKey,
-      queryFn: () => fetchSearchResults(imagePath), // Use the destructured imagePath
-      enabled, // Only run the query if `enabled` is true
-    });
-  };
-
-  const {
-    data: searchResultData,
-    error: searchError,
-    isLoading: searchResultsLoading,
-  } = useSearchQuery({
-    queryKey: ["search", uploadedImg], // uploadedImg is the unique identifier
-    enabled: !!uploadedImg, // Only run the query if uploadedImg is not empty
-  });
-
   const clearImageQuery = async () => {
     setImgQuerySrc("");
     setUploadedImg("");
@@ -105,15 +102,15 @@ export default function Home() {
     setImgName("");
   };
 
-  if (videoError) {
-    return <ErrorFallback error={videoError} />;
-  }
-
   useEffect(() => {
     queryClient.invalidateQueries({
       queryKey: ["search", uploadedImg],
     });
   }, [uploadedImg]);
+
+  if (videoError || searchError) {
+    return <ErrorFallback error={videoError} />;
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -123,7 +120,6 @@ export default function Home() {
           setImgQuerySrc={setImgQuerySrc}
           setUploadedImg={setUploadedImg}
           searchResultData={searchResultData}
-          // setSearchResultData={setSearchResultData}
           updatedSearchData={updatedSearchData}
           setUpdatedSearchData={setUpdatedSearchData}
           imgName={imgName}
@@ -131,36 +127,26 @@ export default function Home() {
           clearImageQuery={clearImageQuery}
           uploadedImg={uploadedImg}
           searchResultsLoading={searchResultsLoading}
-          // setSearchResultsLoading={setSearchResultsLoading}
-          setNewSearchStarted={setNewSearchStarted}
-          newSearchStarted={newSearchStarted}
           onImageSelected={onImageSelected}
-          // searchImage={searchImage}
         />
-        {newSearchStarted ? (
-          <LoadingSpinner />
-        ) : (
-          <>
-            {!searchResultData && !searchResultsLoading && (
-              <Videos videoError={videoError} setVideoError={setVideoError} />
-            )}
-            {searchResultsLoading && ( <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
-          <LoadingSpinner size="lg" color="primary" />
-        </div>)}
-            {searchResultData && !searchResultsLoading && (
-              <SearchResults
-                imgQuerySrc={imgQuerySrc}
-                uploadedImg={uploadedImg}
-                searchResultData={searchResultData}
-                // setSearchResultData={setSearchResultData}
-                updatedSearchData={updatedSearchData}
-                setUpdatedSearchData={setUpdatedSearchData}
-                imgName={imgName}
-                searchResultsLoading={searchResultsLoading}
-                // setSearchResultsLoading={setSearchResultsLoading}
-              />
-            )}
-          </>
+        {!searchResultData && !searchResultsLoading && (
+          <Videos videoError={videoError} setVideoError={setVideoError} />
+        )}
+        {searchResultsLoading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+            <LoadingSpinner size="lg" color="primary" />
+          </div>
+        )}
+        {searchResultData && !searchResultsLoading && (
+          <SearchResults
+            imgQuerySrc={imgQuerySrc}
+            uploadedImg={uploadedImg}
+            searchResultData={searchResultData}
+            updatedSearchData={updatedSearchData}
+            setUpdatedSearchData={setUpdatedSearchData}
+            imgName={imgName}
+            searchResultsLoading={searchResultsLoading}
+          />
         )}
       </div>
     </main>

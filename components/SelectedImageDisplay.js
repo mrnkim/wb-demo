@@ -45,17 +45,12 @@ const SelectedImageDisplay = ({
   unselectImage,
   setUploadedImg,
   searchResultData,
-  // setSearchResultData,
   updatedSearchData,
   setUpdatedSearchData,
-  // setSearchResultsLoading,
-  setNewSearchStarted,
 }) => {
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
-  // const [error, setError] = useState(null);
-  // const [isLoading, setIsLoading] = useState(false);
 
   const imgRef = useRef(null);
 

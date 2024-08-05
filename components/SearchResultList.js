@@ -128,7 +128,7 @@ const SearchResultList = ({
   };
 
   const { ref: observerRef, inView } = useInView({
-    threshold: 1.0,
+    threshold: 0.8,
     triggerOnce: false,
   });
 

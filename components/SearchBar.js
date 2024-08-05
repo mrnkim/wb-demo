@@ -8,19 +8,12 @@ const SearchBar = ({
   setImgQuerySrc,
   setUploadedImg,
   searchResultData,
-  // setSearchResultData,
   updatedSearchData,
   setUpdatedSearchData,
   imgName,
   setImgName,
   clearImageQuery,
-  uploadedImg,
-  searchResultsLoading,
-  // setSearchResultsLoading,
-  newSearchStarted,
-  setNewSearchStarted,
   onImageSelected,
-  // searchImage
 }) => {
 
   return (
@@ -40,12 +33,8 @@ const SearchBar = ({
             unselectImage={clearImageQuery}
             setUploadedImg={setUploadedImg}
             searchResultData={searchResultData}
-            // setSearchResultData={setSearchResultData}
             updatedSearchData={updatedSearchData}
             setUpdatedSearchData={setUpdatedSearchData}
-            // searchImage={searchImage}
-            // setSearchResultsLoading={setSearchResultsLoading}
-            setNewSearchStarted={setNewSearchStarted}
           />
         )}
         {!imgQuerySrc && (
@@ -58,10 +47,8 @@ const SearchBar = ({
         <div className="w-px h-6 bg-[#d9d9d9]" />
         <SearchByImageButtonAndModal
           onImageSelected={onImageSelected}
-          // searchImage={searchImage}
           setImgQuerySrc={setImgQuerySrc}
           setImgName={setImgName}
-          // setSearchResultsLoading={setSearchResultsLoading}
         />
       </div>
     </div>
