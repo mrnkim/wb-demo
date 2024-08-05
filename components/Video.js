@@ -1,62 +1,106 @@
-import React, { useEffect, useRef } from "react";
-import videojs from "video.js";
-import "video.js/dist/video-js.css";
-import "videojs-offset"; // Import the videojs-offset plugin
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import clsx from "clsx";
+import ReactPlayer from "react-player";
+import ErrorFallback from "./ErrorFallback";
+import LoadingSpinner from "./LoadingSpinner";
 
-export const Video = () => {
-  const videoRef = useRef(null);
-  const playerRef = useRef(null);
+const fetchVideoDetail = async (videoId) => {
+  const response = await fetch(`/api/getVideo?videoId=${videoId}`);
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
+};
 
-  options = {
-    autoplay: false,
-    controls: true,
-    responsive: true,
-    fluid: true,
-  };
+const formatDuration = (seconds) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
 
-  useEffect(() => {
-    if (!playerRef.current) {
-      const videoElement = document.createElement("video-js");
-      videoElement.classList.add("vjs-big-play-centered");
-      videoRef.current.appendChild(videoElement);
+  return [
+    hours.toString().padStart(2, "0"),
+    minutes.toString().padStart(2, "0"),
+    secs.toString().padStart(2, "0"),
+  ].join(":");
+};
 
-      const player = (playerRef.current = videojs(videoElement, options, () => {
-        videojs.log("Player is ready");
+const Video = ({ video }) => {
+  const [playing, setPlaying] = useState(false);
 
-        // Ensure the plugin is correctly available
-        if (videojs.getPlugin("offset")) {
-          videojs.log("Applying offset plugin with settings:", options.offset);
-          player.offset({
-            start: options.offset?.start || 0,
-            end: options.offset?.end || Infinity,
-            restart_beginning: options.offset?.restart_beginning || false,
-          });
-        } else {
-          videojs.log("Offset plugin not found");
-        }
+  const {
+    data: videoDetail,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["videoDetail", video._id],
+    queryFn: () => fetchVideoDetail(video._id),
+    staleTime: 600000,
+    cacheTime: 900000,
+  });
 
-        if (onReady) {
-          onReady(player);
-        }
-      }));
-    } else {
-      const player = playerRef.current;
-      player.autoplay(options.autoplay);
-      player.src(options.sources);
-    }
-
-    return () => {
-      const player = playerRef.current;
-      if (player && !player.isDisposed()) {
-        player.dispose();
-        playerRef.current = null;
-      }
-    };
-  }, [options, videoRef, onReady]);
+  if (error) {
+    return <ErrorFallback error={error} />;
+  }
 
   return (
-    <div data-vjs-player>
-      <div ref={videoRef} />
+    <div className="w-full md:w-1/3 px-2 mb-2">
+      <div className="relative p-1">
+        <div
+          className="w-full h-40 relative overflow-hidden rounded cursor-pointer"
+          onClick={() => setPlaying(!playing)}
+        >
+          <ReactPlayer
+            url={videoDetail?.hls?.video_url}
+            controls
+            width="100%"
+            height="100%"
+            light={
+              <img
+                src={videoDetail?.hls?.thumbnail_urls[0]}
+                className="object-contain w-full h-full"
+                alt="thumbnail"
+              />
+            }
+            playing={playing}
+            config={{
+              file: {
+                attributes: {
+                  preload: "auto",
+                },
+              },
+            }}
+            progressInterval={100}
+          />
+          <div
+            className={clsx(
+              "absolute",
+              "top-3",
+              "left-1/2",
+              "transform",
+              "-translate-x-1/2"
+            )}
+          >
+            <div
+              className={clsx(
+                "bg-grey-1000/60",
+                "px-0.5",
+                "py-1",
+                "rounded-sm"
+              )}
+            >
+              <p className={clsx("text-white", "text-xs font-light")}>
+                {formatDuration(video.metadata.duration)}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="text-center mb-2">
+          <p className={clsx("mt-2", "text-body3", "truncate", "grey-700")}>
+            {video.metadata.filename}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

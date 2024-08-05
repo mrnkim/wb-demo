@@ -14,9 +14,8 @@ import styles from "./styles.module.css";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
-// Helper function to fetch image as a blob using the serve-file API route
+/** Fetch image as a blob using the serve-file API route */
 const fetchImageAsBlob = async (filePath) => {
-  // Construct the URL for the serve-file API route
 
   const response = await fetch(
     `/api/serve-file?file=${encodeURIComponent(filePath)}`
@@ -27,7 +26,6 @@ const fetchImageAsBlob = async (filePath) => {
   return await response.blob();
 };
 
-// Convert a blob to a data URL
 const blobToDataURL = (blob) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -44,9 +42,6 @@ const SelectedImageDisplay = ({
   setImgName,
   unselectImage,
   setUploadedImg,
-  searchResultData,
-  updatedSearchData,
-  setUpdatedSearchData,
 }) => {
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
@@ -162,7 +157,7 @@ const SelectedImageDisplay = ({
       const urlParts = imgQuerySrc.split("/");
       const originalFilename =
         imgQuerySrc.split("/")[imgQuerySrc.split("/") - 1];
-      const timestamp = Date.now(); // Generate a timestamp
+      const timestamp = Date.now();
       const croppedFilename = `${originalFilename}-cropped-${timestamp}`;
 
       const response = await fetch("/api/uploadByUrl", {
@@ -178,11 +173,9 @@ const SelectedImageDisplay = ({
       const { downloadUrl } = await response.json();
       return downloadUrl;
     } else {
-      // If the image source is a Data URL, upload via the upload route
       const blob = dataURLToBlob(src);
       const formData = new FormData();
-      const timestamp = Date.now(); // Generate a timestamp
-
+      const timestamp = Date.now();
       formData.append("file", blob, `${imgName}-cropped-${timestamp}`);
 
       const response = await fetch("/api/upload", {
@@ -195,7 +188,7 @@ const SelectedImageDisplay = ({
       }
 
       const { url } = await response.json();
-      return url; // Return the URL
+      return url;
     }
   };
 

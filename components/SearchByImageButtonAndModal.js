@@ -34,15 +34,12 @@ const getErrorMessage = (code) => {
 
 const SearchByImageButtonAndModal = ({
   onImageSelected,
-  // searchImage,
-  setImgQuerySrc,
-  setImgName,
 }) => {
   const [imageUrlFromInput, setImageUrlFromInput] = useState("");
   const [errorCode, setErrorCode] = useState();
   const [isHovering, setIsHovering] = useState(false);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const closeModal = () => {
     setErrorCode(undefined);
     setImageUrlFromInput("");

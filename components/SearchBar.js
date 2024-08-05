@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import SearchByImageButtonAndModal from "./SearchByImageButtonAndModal";
 import SelectedImageDisplay from "./SelectedImageDisplay";
 
@@ -7,15 +7,11 @@ const SearchBar = ({
   imgQuerySrc,
   setImgQuerySrc,
   setUploadedImg,
-  searchResultData,
-  updatedSearchData,
-  setUpdatedSearchData,
   imgName,
   setImgName,
   clearImageQuery,
   onImageSelected,
 }) => {
-
   return (
     <div className="w-full max-w-4xl h-14 py-3 bg-white border-b-2 border-[#e5e6e4] flex justify-between items-center">
       <div className="flex items-center">
@@ -32,9 +28,6 @@ const SearchBar = ({
             setImgName={setImgName}
             unselectImage={clearImageQuery}
             setUploadedImg={setUploadedImg}
-            searchResultData={searchResultData}
-            updatedSearchData={updatedSearchData}
-            setUpdatedSearchData={setUpdatedSearchData}
           />
         )}
         {!imgQuerySrc && (
@@ -47,8 +40,6 @@ const SearchBar = ({
         <div className="w-px h-6 bg-[#d9d9d9]" />
         <SearchByImageButtonAndModal
           onImageSelected={onImageSelected}
-          setImgQuerySrc={setImgQuerySrc}
-          setImgName={setImgName}
         />
       </div>
     </div>
