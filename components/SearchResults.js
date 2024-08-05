@@ -6,6 +6,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./ErrorFallback";
 import EmptyBasicIcon from "./EmptyBasicIcon";
+import LimitsOfSearchByImageButton from "./LimitsOfSearchByImageButton";
 
 const SearchResults = ({
   searchResultData,
@@ -42,6 +43,7 @@ const SearchResults = ({
                   ? " matches"
                   : " match"}{" "}
               </p>
+              <LimitsOfSearchByImageButton />
             </div>
             <SearchResultList
               searchResultData={searchResultData}
