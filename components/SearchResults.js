@@ -15,6 +15,8 @@ const SearchResults = ({
   uploadedImg,
   searchResultsLoading,
 }) => {
+  console.log("🚀 > searchResultData=", searchResultData)
+  console.log("🚀 > searchResultsLoading=", searchResultsLoading)
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div>

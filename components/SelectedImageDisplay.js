@@ -42,7 +42,8 @@ const SelectedImageDisplay = ({
   unselectImage,
   setUploadedImg,
 }) => {
-  console.log("🚀 > imgQuerySrc=", imgQuerySrc)
+  console.log("🚀 > imgName=", imgName)
+  console.log("🚀 > imgQuerySrc=", imgQuerySrc);
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
@@ -192,20 +193,36 @@ const SelectedImageDisplay = ({
     }
   };
 
+  const base64ToFile = async (base64String, fileName) => {
+    const response = await fetch(base64String);
+    const blob = await response.blob();
+    return new File([blob], fileName, { type: blob.type });
+  };
+
   const onCropSearchClick = async () => {
     if (completedCrop && imgRef.current) {
       try {
-        const croppedImage = await getCroppedImage(
+        const base64Image = await getCroppedImage(
           imgRef.current,
           completedCrop
         );
+        console.log("🚀 > onCropSearchClick > base64Image=", base64Image);
 
-        console.log("🚀 > onCropSearchClick > croppedImage=", croppedImage);
-        // if (croppedImage) {
-        //   const uploadResponse = await uploadImage(
-        //     croppedImage,
-        //     typeof imgQuerySrc === "string"
-        //   );
+        const croppedImageFile = await base64ToFile(
+          base64Image,
+         `${imgName}-cropped`
+        );
+        console.log(
+          "🚀 > onCropSearchClick > croppedImageFile=",
+          croppedImageFile
+        );
+
+        if (croppedImageFile) {
+          setImgQuerySrc(croppedImageFile);
+          setUploadedImg(croppedImageFile);
+          setImgName(croppedImageFile.name);
+          closeDisplayModal();
+        };
 
         // if (uploadResponse) {
         //   setImgQuerySrc(uploadResponse);
