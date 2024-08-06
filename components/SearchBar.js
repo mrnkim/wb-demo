@@ -6,7 +6,6 @@ import SelectedImageDisplay from "./SelectedImageDisplay";
 const SearchBar = ({
   imgQuerySrc,
   setImgQuerySrc,
-  setUploadedImg,
   imgName,
   setImgName,
   clearImageQuery,
@@ -27,7 +26,6 @@ const SearchBar = ({
             imgName={imgName}
             setImgName={setImgName}
             unselectImage={clearImageQuery}
-            setUploadedImg={setUploadedImg}
           />
         )}
         {!imgQuerySrc && (

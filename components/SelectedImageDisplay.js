@@ -40,7 +40,6 @@ const SelectedImageDisplay = ({
   imgName,
   setImgName,
   unselectImage,
-  setUploadedImg,
 }) => {
   console.log("🚀 > imgName=", imgName);
   console.log("🚀 > imgQuerySrc=", imgQuerySrc);
@@ -179,7 +178,6 @@ const SelectedImageDisplay = ({
 
         if (croppedImageFile) {
           setImgQuerySrc(croppedImageFile);
-          setUploadedImg(croppedImageFile);
           setImgName(croppedImageFile.name);
           closeDisplayModal();
         }

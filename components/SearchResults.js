@@ -12,7 +12,7 @@ const SearchResults = ({
   searchResultData,
   updatedSearchData,
   setUpdatedSearchData,
-  uploadedImg,
+  imgQuerySrc,
   searchResultsLoading,
 }) => {
   console.log("🚀 > searchResultData=", searchResultData)
@@ -51,7 +51,7 @@ const SearchResults = ({
               searchResultData={searchResultData}
               updatedSearchData={updatedSearchData}
               setUpdatedSearchData={setUpdatedSearchData}
-              uploadedImg={uploadedImg}
+              imgQuerySrc={imgQuerySrc}
             />
           </>
         ) : (

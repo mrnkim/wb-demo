@@ -10,8 +10,6 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {
   const [imgQuerySrc, setImgQuerySrc] = useState("");
-  console.log("🚀 > Home > imgQuerySrc,=", imgQuerySrc,)
-  const [uploadedImg, setUploadedImg] = useState("");
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
   const [imgName, setImgName] = useState("");
   const [videoError, setVideoError] = useState(null);
@@ -53,8 +51,8 @@ export default function Home() {
     error: searchError,
     isLoading: searchResultsLoading,
   } = useSearchQuery({
-    queryKey: ["search", uploadedImg],
-    enabled: !!uploadedImg,
+    queryKey: ["search", imgQuerySrc],
+    enabled: !!imgQuerySrc,
   });
     console.log("🚀 > Home > searchResultData=", searchResultData)
 
@@ -63,7 +61,6 @@ export default function Home() {
     if (typeof src === "string") {
       try {
         setImgQuerySrc(src);
-        setUploadedImg(src);
         setImgName(src.split("/")[src.split("/").length-1]);
       } catch (error) {
         console.error("Error processing image URL:", error);
@@ -71,7 +68,6 @@ export default function Home() {
     } else if (src instanceof File) {
       try {
         setImgQuerySrc(src);
-        setUploadedImg(src);
         setImgName(src.name);
       } catch (error) {
         console.error("Error processing file upload:", error);
@@ -81,16 +77,15 @@ export default function Home() {
 
   const clearImageQuery = async () => {
     setImgQuerySrc("");
-    setUploadedImg("");
     setUpdatedSearchData([]);
     setImgName("");
   };
 
   useEffect(() => {
     queryClient.invalidateQueries({
-      queryKey: ["search", uploadedImg],
+      queryKey: ["search", imgQuerySrc],
     });
-  }, [uploadedImg]);
+  }, [imgQuerySrc]);
 
   if (videoError || searchError) {
     return <ErrorFallback error={videoError || searchError} />;
@@ -102,14 +97,12 @@ export default function Home() {
         <SearchBar
           imgQuerySrc={imgQuerySrc}
           setImgQuerySrc={setImgQuerySrc}
-          setUploadedImg={setUploadedImg}
           searchResultData={searchResultData}
           updatedSearchData={updatedSearchData}
           setUpdatedSearchData={setUpdatedSearchData}
           imgName={imgName}
           setImgName={setImgName}
           clearImageQuery={clearImageQuery}
-          uploadedImg={uploadedImg}
           searchResultsLoading={searchResultsLoading}
           onImageSelected={onImageSelected}
         />
@@ -126,7 +119,7 @@ export default function Home() {
             searchResultData={searchResultData}
             updatedSearchData={updatedSearchData}
             setUpdatedSearchData={setUpdatedSearchData}
-            uploadedImg={uploadedImg}
+            imgQuerySrc={imgQuerySrc}
             searchResultsLoading={searchResultsLoading}
           />
         )}
