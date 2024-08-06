@@ -42,7 +42,7 @@ const SelectedImageDisplay = ({
   unselectImage,
   setUploadedImg,
 }) => {
-  console.log("🚀 > imgName=", imgName)
+  console.log("🚀 > imgName=", imgName);
   console.log("🚀 > imgQuerySrc=", imgQuerySrc);
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
@@ -153,46 +153,6 @@ const SelectedImageDisplay = ({
     return new Blob([uint8Array], { type: mimeString });
   };
 
-  const uploadImage = async (src, isUrl = false) => {
-    if (isUrl) {
-      const urlParts = imgQuerySrc.split("/");
-      const originalFilename =
-        imgQuerySrc.split("/")[imgQuerySrc.split("/") - 1];
-      const timestamp = Date.now();
-      const croppedFilename = `${originalFilename}-cropped-${timestamp}`;
-
-      const response = await fetch("/api/uploadByUrl", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: src }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image by URL");
-      }
-
-      const { downloadUrl } = await response.json();
-      return downloadUrl;
-    } else {
-      const blob = dataURLToBlob(src);
-      const formData = new FormData();
-      const timestamp = Date.now();
-      formData.append("file", blob, `${imgName}-cropped-${timestamp}`);
-
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const { url } = await response.json();
-      return url;
-    }
-  };
-
   const base64ToFile = async (base64String, fileName) => {
     const response = await fetch(base64String);
     const blob = await response.blob();
@@ -210,7 +170,7 @@ const SelectedImageDisplay = ({
 
         const croppedImageFile = await base64ToFile(
           base64Image,
-         `${imgName}-cropped`
+          `${imgName}-cropped`
         );
         console.log(
           "🚀 > onCropSearchClick > croppedImageFile=",
@@ -222,17 +182,7 @@ const SelectedImageDisplay = ({
           setUploadedImg(croppedImageFile);
           setImgName(croppedImageFile.name);
           closeDisplayModal();
-        };
-
-        // if (uploadResponse) {
-        //   setImgQuerySrc(uploadResponse);
-        //   setUploadedImg(uploadResponse);
-        //   setImgName(uploadResponse.split("/").pop());
-        //   closeDisplayModal();
-        // }
-        // } else {
-        //   console.warn("No cropped image returned from getCroppedImage");
-        // }
+        }
       } catch (error) {
         console.error("Error processing image:", error);
       }

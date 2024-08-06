@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import FormData from "form-data";
-import fs from "fs";
-import path from "path";
 
 export const config = {
   api: {
@@ -40,12 +38,7 @@ export async function POST(request) {
       searchDataForm.append("query_media_url", imgQuerySrc);
     } else if (imgFile && imgFile instanceof Blob) {
       const buffer = Buffer.from(await imgFile.arrayBuffer());
-      const tempFilePath = path.join("/tmp", imgFile.name);
-      fs.writeFileSync(tempFilePath, buffer);
-      searchDataForm.append(
-        "query_media_file",
-        fs.createReadStream(tempFilePath)
-      );
+      searchDataForm.append("query_media_file", buffer, imgFile.name);
     } else {
       return NextResponse.json(
         { error: "No query or file provided" },
@@ -62,7 +55,6 @@ export async function POST(request) {
         ...formDataHeaders,
         accept: "application/json",
         "x-api-key": apiKey,
-        "Content-Type": "multipart/form-data",
       },
     });
 
