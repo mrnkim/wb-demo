@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import SearchResults from "@/components/SearchResults";
 import Videos from "@/components/Videos";
-import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorFallback from "../components/ErrorFallback";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
@@ -37,55 +36,39 @@ export default function Home() {
     return response.json();
   };
 
-  const useSearchQuery = ({ queryKey, enabled }) => {
-    const [key, imagePath] = queryKey;
-    return useQuery({
-      queryKey,
-      queryFn: () => fetchSearchResults(imagePath),
-      enabled,
-    });
-  };
-
   const {
     data: searchResultData,
     error: searchError,
     isLoading: searchResultsLoading,
-  } = useSearchQuery({
-    queryKey: ["search", imgQuerySrc],
+  } = useQuery({
+    queryKey: ["search", imgQuerySrc.name],
+    queryFn: () => fetchSearchResults(imgQuerySrc),
     enabled: !!imgQuerySrc,
+    keepPreviousData: true,
   });
-    console.log("🚀 > Home > searchResultData=", searchResultData)
 
-  /** Upload image as a file on image selected */
+  useEffect(() => {
+    queryClient.invalidateQueries(["search", imgQuerySrc]);
+  }, [imgQuerySrc, queryClient]);
+
   const onImageSelected = async (src) => {
+    setImgQuerySrc(null);
+    setUpdatedSearchData([]);
+    
     if (typeof src === "string") {
-      try {
-        setImgQuerySrc(src);
-        setImgName(src.split("/")[src.split("/").length-1]);
-      } catch (error) {
-        console.error("Error processing image URL:", error);
-      }
+      setImgQuerySrc(src);
+      setImgName(src.split("/").pop());
     } else if (src instanceof File) {
-      try {
-        setImgQuerySrc(src);
-        setImgName(src.name);
-      } catch (error) {
-        console.error("Error processing file upload:", error);
-      }
+      setImgQuerySrc(src);
+      setImgName(src.name);
     }
   };
 
-  const clearImageQuery = async () => {
+  const clearImageQuery = () => {
     setImgQuerySrc("");
     setUpdatedSearchData([]);
     setImgName("");
   };
-
-  useEffect(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["search", imgQuerySrc],
-    });
-  }, [imgQuerySrc]);
 
   if (videoError || searchError) {
     return <ErrorFallback error={videoError || searchError} />;
@@ -108,11 +91,6 @@ export default function Home() {
         />
         {!searchResultData && !searchResultsLoading && (
           <Videos videoError={videoError} setVideoError={setVideoError} />
-        )}
-        {searchResultsLoading && (
-          <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
-            <LoadingSpinner size="lg" color="primary" />
-          </div>
         )}
         {searchResultData && !searchResultsLoading && (
           <SearchResults
