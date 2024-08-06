@@ -42,6 +42,7 @@ const SelectedImageDisplay = ({
   unselectImage,
   setUploadedImg,
 }) => {
+  console.log("🚀 > imgQuerySrc=", imgQuerySrc)
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);

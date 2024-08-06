@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {
   const [imgQuerySrc, setImgQuerySrc] = useState("");
+  console.log("🚀 > Home > imgQuerySrc,=", imgQuerySrc,)
   const [uploadedImg, setUploadedImg] = useState("");
   const [updatedSearchData, setUpdatedSearchData] = useState([]);
   const [imgName, setImgName] = useState("");
@@ -18,12 +19,23 @@ export default function Home() {
   const queryClient = useQueryClient();
 
   const fetchSearchResults = async (imagePath) => {
-    const response = await fetch(
-      `/api/search?query=${encodeURIComponent(imagePath)}`
-    );
+    const formData = new FormData();
+
+    if (imagePath instanceof File) {
+      formData.append("file", imagePath);
+    } else {
+      formData.append("query", imagePath);
+    }
+
+    const response = await fetch("/api/search", {
+      method: "POST",
+      body: formData,
+    });
+
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
+
     return response.json();
   };
 
@@ -44,50 +56,22 @@ export default function Home() {
     queryKey: ["search", uploadedImg],
     enabled: !!uploadedImg,
   });
+    console.log("🚀 > Home > searchResultData=", searchResultData)
 
   /** Upload image as a file on image selected */
   const onImageSelected = async (src) => {
     if (typeof src === "string") {
       try {
-        // const response = await fetch("/api/uploadByUrl", {
-        //   method: "POST",
-        //   body: JSON.stringify({ url: src }),
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        // });
-        // if (!response.ok) {
-        //   console.error("Failed to fetch image through proxy");
-        //   return;
-        // }
-
-        // const { downloadUrl } = await response.json();
-        // const fileName = downloadUrl.split("/").pop();
-
         setImgQuerySrc(src);
-        setUploadedImg(downloadUrl);
-        setImgName(fileName);
+        setUploadedImg(src);
+        setImgName(src.split("/")[src.split("/").length-1]);
       } catch (error) {
         console.error("Error processing image URL:", error);
       }
     } else if (src instanceof File) {
       try {
-        // const formData = new FormData();
-        // formData.append("file", src);
-
-        // const response = await fetch("/api/upload", {
-        //   method: "POST",
-        //   body: formData,
-        // });
-
-        // if (!response.ok) {
-        //   console.error("Failed to upload image");
-        //   return;
-        // }
-
-        // const { url } = await response.json();
         setImgQuerySrc(src);
-        setUploadedImg(url);
+        setUploadedImg(src);
         setImgName(src.name);
       } catch (error) {
         console.error("Error processing file upload:", error);
@@ -98,7 +82,7 @@ export default function Home() {
   const clearImageQuery = async () => {
     setImgQuerySrc("");
     setUploadedImg("");
-    setUpdatedSearchData("");
+    setUpdatedSearchData([]);
     setImgName("");
   };
 
@@ -109,7 +93,7 @@ export default function Home() {
   }, [uploadedImg]);
 
   if (videoError || searchError) {
-    return <ErrorFallback error={videoError} />;
+    return <ErrorFallback error={videoError || searchError} />;
   }
 
   return (
@@ -134,7 +118,7 @@ export default function Home() {
         )}
         {searchResultsLoading && (
           <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
-          <LoadingSpinner size="lg" color="primary" />
+            <LoadingSpinner size="lg" color="primary" />
           </div>
         )}
         {searchResultData && !searchResultsLoading && (
