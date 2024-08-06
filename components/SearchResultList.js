@@ -16,7 +16,7 @@ const SearchResultList = ({
   const [playingIndex, setPlayingIndex] = useState(null);
   const [clickedThumbnailIndex, setClickedThumbnailIndex] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
-  
+
   const playerRefs = useRef([]);
 
   const fetchNextSearchResults = async () => {
@@ -136,7 +136,7 @@ const SearchResultList = ({
     }
   }, [inView, nextPageToken]);
 
-  if (nextPageLoading && !updatedSearchData.searchData.length) {
+  if (nextPageLoading && !updatedSearchData?.searchData?.length) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
         <LoadingSpinner size="lg" color="primary" />

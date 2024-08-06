@@ -4,6 +4,7 @@ import SearchBar from "@/components/SearchBar";
 import SearchResults from "@/components/SearchResults";
 import Videos from "@/components/Videos";
 import ErrorFallback from "../components/ErrorFallback";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -54,7 +55,7 @@ export default function Home() {
   const onImageSelected = async (src) => {
     setImgQuerySrc(null);
     setUpdatedSearchData([]);
-    
+
     if (typeof src === "string") {
       setImgQuerySrc(src);
       setImgName(src.split("/").pop());
@@ -91,6 +92,11 @@ export default function Home() {
         />
         {!searchResultData && !searchResultsLoading && (
           <Videos videoError={videoError} setVideoError={setVideoError} />
+        )}
+        {searchResultsLoading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+            <LoadingSpinner size="lg" color="primary" />
+          </div>
         )}
         {searchResultData && !searchResultsLoading && (
           <SearchResults
