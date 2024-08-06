@@ -4,7 +4,6 @@ import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import Button from "./Button";
 import clsx from "clsx";
-// import img from "next/image";
 
 const LimitsOfSearchByImageButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

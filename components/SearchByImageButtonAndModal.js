@@ -9,7 +9,6 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import ImageDropzoneHelperText from "./ImageDropzoneHelperText";
-import colors from "../style/colors";
 
 const acceptedImageTypes = {
   "image/jpeg": [".jpeg", ".jpg"],

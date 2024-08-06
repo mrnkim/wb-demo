@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import ReactPlayer from "react-player";
 import ErrorFallback from "./ErrorFallback";
-import LoadingSpinner from "./LoadingSpinner";
 
 const fetchVideoDetail = async (videoId) => {
   const response = await fetch(`/api/getVideo?videoId=${videoId}`);

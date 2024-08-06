@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, Suspense } from "react";
+import React from "react";
 import clsx from "clsx";
 import SearchResultList from "./SearchResultList";
 import LoadingSpinner from "./LoadingSpinner";
@@ -15,8 +15,6 @@ const SearchResults = ({
   imgQuerySrc,
   searchResultsLoading,
 }) => {
-  console.log("🚀 > searchResultData=", searchResultData)
-  console.log("🚀 > searchResultsLoading=", searchResultsLoading)
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div>

@@ -41,8 +41,6 @@ const SelectedImageDisplay = ({
   setImgName,
   unselectImage,
 }) => {
-  console.log("🚀 > imgName=", imgName);
-  console.log("🚀 > imgQuerySrc=", imgQuerySrc);
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
@@ -138,20 +136,6 @@ const SelectedImageDisplay = ({
     });
   };
 
-  const dataURLToBlob = (dataURL) => {
-    const [header, base64Data] = dataURL.split(",");
-    const mimeString = header.split(":")[1].split(";")[0];
-    const binaryString = window.atob(base64Data);
-    const arrayBuffer = new ArrayBuffer(binaryString.length);
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    for (let i = 0; i < binaryString.length; i++) {
-      uint8Array[i] = binaryString.charCodeAt(i);
-    }
-
-    return new Blob([uint8Array], { type: mimeString });
-  };
-
   const base64ToFile = async (base64String, fileName) => {
     const response = await fetch(base64String);
     const blob = await response.blob();
@@ -165,15 +149,10 @@ const SelectedImageDisplay = ({
           imgRef.current,
           completedCrop
         );
-        console.log("🚀 > onCropSearchClick > base64Image=", base64Image);
 
         const croppedImageFile = await base64ToFile(
           base64Image,
           `${imgName}-cropped`
-        );
-        console.log(
-          "🚀 > onCropSearchClick > croppedImageFile=",
-          croppedImageFile
         );
 
         if (croppedImageFile) {
