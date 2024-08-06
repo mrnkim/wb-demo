@@ -49,22 +49,22 @@ export default function Home() {
   const onImageSelected = async (src) => {
     if (typeof src === "string") {
       try {
-        const response = await fetch("/api/uploadByUrl", {
-          method: "POST",
-          body: JSON.stringify({ url: src }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!response.ok) {
-          console.error("Failed to fetch image through proxy");
-          return;
-        }
+        // const response = await fetch("/api/uploadByUrl", {
+        //   method: "POST",
+        //   body: JSON.stringify({ url: src }),
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // });
+        // if (!response.ok) {
+        //   console.error("Failed to fetch image through proxy");
+        //   return;
+        // }
 
-        const { downloadUrl } = await response.json();
-        const fileName = downloadUrl.split("/").pop();
+        // const { downloadUrl } = await response.json();
+        // const fileName = downloadUrl.split("/").pop();
 
-        setImgQuerySrc(downloadUrl);
+        setImgQuerySrc(src);
         setUploadedImg(downloadUrl);
         setImgName(fileName);
       } catch (error) {
@@ -72,20 +72,20 @@ export default function Home() {
       }
     } else if (src instanceof File) {
       try {
-        const formData = new FormData();
-        formData.append("file", src);
+        // const formData = new FormData();
+        // formData.append("file", src);
 
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+        // const response = await fetch("/api/upload", {
+        //   method: "POST",
+        //   body: formData,
+        // });
 
-        if (!response.ok) {
-          console.error("Failed to upload image");
-          return;
-        }
+        // if (!response.ok) {
+        //   console.error("Failed to upload image");
+        //   return;
+        // }
 
-        const { url } = await response.json();
+        // const { url } = await response.json();
         setImgQuerySrc(src);
         setUploadedImg(url);
         setImgName(src.name);

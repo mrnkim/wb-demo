@@ -32,9 +32,7 @@ const getErrorMessage = (code) => {
   }
 };
 
-const SearchByImageButtonAndModal = ({
-  onImageSelected,
-}) => {
+const SearchByImageButtonAndModal = ({ onImageSelected }) => {
   const [imageUrlFromInput, setImageUrlFromInput] = useState("");
   const [errorCode, setErrorCode] = useState();
   const [isHovering, setIsHovering] = useState(false);
@@ -182,7 +180,7 @@ const SearchByImageButtonAndModal = ({
           <div className="flex w-full">
             <Input
               className="h-10 border-r-0"
-              fullWidth 
+              fullWidth
               placeholder="Drop an image link"
               icon={<InsertLink className="text-grey-600" fontSize="small" />}
               value={imageUrlFromInput}

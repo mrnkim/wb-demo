@@ -14,11 +14,10 @@ import styles from "./styles.module.css";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
-/** Fetch image as a blob using the serve-file API route */
+/** Fetch image as a blob using the proxy API route */
 const fetchImageAsBlob = async (filePath) => {
-
   const response = await fetch(
-    `/api/serve-file?file=${encodeURIComponent(filePath)}`
+    `/api/proxy-image?url=${encodeURIComponent(filePath)}`
   );
   if (!response.ok) {
     throw new Error("Failed to fetch image");
@@ -200,21 +199,22 @@ const SelectedImageDisplay = ({
           completedCrop
         );
 
-        if (croppedImage) {
-          const uploadResponse = await uploadImage(
-            croppedImage,
-            typeof imgQuerySrc === "string"
-          );
+        console.log("🚀 > onCropSearchClick > croppedImage=", croppedImage);
+        // if (croppedImage) {
+        //   const uploadResponse = await uploadImage(
+        //     croppedImage,
+        //     typeof imgQuerySrc === "string"
+        //   );
 
-          if (uploadResponse) {
-            setImgQuerySrc(uploadResponse);
-            setUploadedImg(uploadResponse);
-            setImgName(uploadResponse.split("/").pop());
-            closeDisplayModal();
-          }
-        } else {
-          console.warn("No cropped image returned from getCroppedImage");
-        }
+        // if (uploadResponse) {
+        //   setImgQuerySrc(uploadResponse);
+        //   setUploadedImg(uploadResponse);
+        //   setImgName(uploadResponse.split("/").pop());
+        //   closeDisplayModal();
+        // }
+        // } else {
+        //   console.warn("No cropped image returned from getCroppedImage");
+        // }
       } catch (error) {
         console.error("Error processing image:", error);
       }
@@ -248,6 +248,7 @@ const SelectedImageDisplay = ({
           )}
           src={imageSrc}
           alt="user-uploaded"
+          crossOrigin="anonymous"
         />
         <p
           className={clsx(
@@ -290,6 +291,7 @@ const SelectedImageDisplay = ({
             className="h-full rounded bg-grey-50 object-contain"
             src={imageSrc}
             alt="expanded-user-uploaded"
+            crossOrigin="anonymous"
           />
         </div>
       </Popper>
@@ -327,12 +329,14 @@ const SelectedImageDisplay = ({
               onChange={(_, percentCrop) => setCrop(percentCrop)}
               onComplete={(c) => setCompletedCrop(c)}
               minHeight={100}
+              crossOrigin="anonymous"
             >
               <img
                 ref={imgRef}
                 className="h-full w-full bg-grey-50 object-contain"
                 src={imageSrc}
                 alt="expanded-user-uploaded"
+                crossOrigin="anonymous"
               />
             </ReactCrop>
           </div>
