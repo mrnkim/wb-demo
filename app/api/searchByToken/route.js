@@ -24,7 +24,7 @@ export async function GET(req) {
     const response = await axios.get(url, {
       headers: {
         accept: "application/json",
-        "x-api-key": apiKey,
+        "x-api-key": `${apiKey}`,
       },
     });
 
