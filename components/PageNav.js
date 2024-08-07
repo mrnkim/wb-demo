@@ -74,7 +74,7 @@ const PageNav = ({ page, setPage, totalPage }) => {
           alt="Previous"
         />
       </button>
-      {pagesArray.map((pg) => (
+      {pagesArray?.map((pg) => (
         <button
           key={pg}
           className={clsx(
