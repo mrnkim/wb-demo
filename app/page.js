@@ -42,7 +42,7 @@ export default function Home() {
     error: searchError,
     isLoading: searchResultsLoading,
   } = useQuery({
-    queryKey: ["search", imgQuerySrc.name],
+    queryKey: ["search", imgName],
     queryFn: () => fetchSearchResults(imgQuerySrc),
     enabled: !!imgQuerySrc,
     keepPreviousData: true,
