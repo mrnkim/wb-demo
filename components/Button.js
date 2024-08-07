@@ -193,4 +193,6 @@ const Button = forwardRef(
   }
 );
 
+Button.displayName = "Button";
+
 export default memo(Button);
