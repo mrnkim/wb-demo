@@ -50,7 +50,7 @@ export async function POST(request) {
       headers: {
         ...formDataHeaders,
         accept: "application/json",
-        "x-api-key": apiKey,
+        "x-api-key": `${apiKey}`,
       },
     });
 
