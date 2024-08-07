@@ -3,7 +3,7 @@
 ⭐️ Check out the [Demo](https://wb-demo.vercel.app/)!
 
 <div align="center">
-  <a href="https://who-talked-about-us-vercel-client.vercel.app/">
+  <a href="https://wb-demo.vercel.app/">
     <img src="public/search.gif" alt="search result screenshot" style="border: 1px solid black;" />
   </a>
 </div>
@@ -39,14 +39,14 @@ git clone git@github.com:mrnkim/wb-demo.git
  TWELVELABS_API_KEY=<YOUR API KEY>
  TWELVELABS_INDEX_ID=<YOUR INDEX ID>
 ```
-* Check [here](https://docs.twelvelabs.io/docs/create-indexes) on how to create an index and get the index id
+
+- Check [here](https://docs.twelvelabs.io/docs/create-indexes) on how to create an index and get the index id
 
 ### Step 4. Install and start the client
 
-   ```
-   npm install
-   npm run dev
-   ```
+```
+npm install
+npm run dev
+```
 
 ### Step 5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
