@@ -67,7 +67,7 @@ const SearchResults = ({
                   "text-center font-aeonik text-body2 font-normal text-grey-900"
                 )}
               >
-                <p>We couldn't find any results for your query 😿</p>
+                <p>We couldn&apos;t find any results for your query 😿</p>
               </div>
             </div>
           </div>
