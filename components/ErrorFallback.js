@@ -27,14 +27,10 @@ function ErrorFallback({ error }) {
       >
         <p className="text-body2 text-grey-900">Something went wrong.</p>
         <span className="text-body2 text-grey-900">
-          {error?.message || error?.error}
+          {error?.message || error?.error || error}
         </span>
       </Alert>
-      <Button
-        type="button"
-        size="sm"
-        onClick={handleRefresh}
-      >
+      <Button type="button" size="sm" onClick={handleRefresh}>
         Back to Home
       </Button>
     </div>

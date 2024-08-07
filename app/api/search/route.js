@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import FormData from "form-data";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 export async function POST(request) {
   try {
@@ -68,10 +68,10 @@ export async function POST(request) {
 
     return NextResponse.json({ pageInfo, searchData });
   } catch (error) {
-    console.error("Error in POST handler:", error);
-    return NextResponse.json(
-      { error: error.message || error.toString() },
-      { status: 500 }
-    );
+    console.error("Error in POST handler:", error?.response?.data || error);
+    const status = error?.response?.status || 500;
+    const message = error?.response?.data?.message || error.message;
+
+    return NextResponse.json({ error: message }, { status });
   }
 }
